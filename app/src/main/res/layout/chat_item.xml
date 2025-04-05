@@ -15,10 +15,11 @@
         android:textStyle="bold"/>
 
     <TextView
-        android:id="@+id/tvLastMessage"
+        android:id="@+id/tvChatType"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:layout_marginTop="4dp"/>
+        android:textSize="14sp"/>
+<!--        android:textColor="@color/gray"/>-->
+
 
 </LinearLayout>

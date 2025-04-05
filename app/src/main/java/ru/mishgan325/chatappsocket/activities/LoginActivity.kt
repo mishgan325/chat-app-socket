@@ -11,21 +11,21 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import ru.mishgan325.chatappsocket.utils.ApiConfig
 import ru.mishgan325.chatappsocket.R
-import ru.mishgan325.chatappsocket.api.AuthApiService
+import ru.mishgan325.chatappsocket.api.ApiService
 import ru.mishgan325.chatappsocket.api.AuthRequest
 import ru.mishgan325.chatappsocket.utils.SessionManager
 
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var sessionManager: SessionManager
-    private lateinit var authApi: AuthApiService
+    private lateinit var authApi: ApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
         sessionManager = SessionManager(this)
-        authApi = ApiConfig.retrofit.create(AuthApiService::class.java)
+        authApi = ApiConfig.retrofit.create(ApiService::class.java)
 
         val etUsername = findViewById<EditText>(R.id.etUsername)
         val etPassword = findViewById<EditText>(R.id.etPassword)

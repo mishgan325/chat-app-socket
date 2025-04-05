@@ -2,6 +2,7 @@ package ru.mishgan325.chatappsocket.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 
@@ -23,7 +24,10 @@ class SessionManager(context: Context) {
     fun getAuthToken(): String? = prefs.getString("jwt_token", null)
 
     fun isLoggedIn(): Boolean {
-        return getAuthToken() != null
+        val token = getAuthToken()
+        val isLogged = token != null
+        Log.d("Auth", "isLoggedIn: $isLogged")
+        return isLogged
     }
 
     fun logout() {

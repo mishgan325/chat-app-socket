@@ -6,16 +6,27 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.mishgan325.chatappsocket.R
-import ru.mishgan325.chatappsocket.activities.Chat
+import ru.mishgan325.chatappsocket.models.Chat
 
 class ChatListAdapter(
-    private val chats: List<Chat>,
+    private var chats: List<Chat>,
     private val onItemClick: (Chat) -> Unit
 ) : RecyclerView.Adapter<ChatListAdapter.ViewHolder>() {
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvChatName: TextView = view.findViewById(R.id.tvChatName)
-        val tvLastMessage: TextView = view.findViewById(R.id.tvLastMessage)
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        private val nameView: TextView = view.findViewById(R.id.tvChatName)
+        private val typeView: TextView = view.findViewById(R.id.tvChatType)
+
+        fun bind(chat: Chat) {
+            nameView.text = chat.name
+            typeView.text = when (chat.type) {
+                "PRIVATE" -> "Личный чат"
+                "GROUP" -> "Групповой чат"
+                else -> "Неизвестный тип"
+            }
+
+            itemView.setOnClickListener { onItemClick(chat) }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -25,11 +36,13 @@ class ChatListAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val chat = chats[position]
-        holder.tvChatName.text = chat.name
-        holder.tvLastMessage.text = chat.lastMessage
-        holder.itemView.setOnClickListener { onItemClick(chat) }
+        holder.bind(chats[position])
     }
 
     override fun getItemCount() = chats.size
+
+    fun updateChats(newChats: List<Chat>) {
+        chats = newChats
+        notifyDataSetChanged()
+    }
 }
