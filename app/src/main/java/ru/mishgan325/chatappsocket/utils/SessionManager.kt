@@ -21,4 +21,12 @@ class SessionManager(context: Context) {
     }
 
     fun getAuthToken(): String? = prefs.getString("jwt_token", null)
+
+    fun isLoggedIn(): Boolean {
+        return getAuthToken() != null
+    }
+
+    fun logout() {
+        prefs.edit().remove("jwt_token").apply()
+    }
 }
