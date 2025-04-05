@@ -88,6 +88,7 @@ class ChatSelectActivity : AppCompatActivity() {
     private fun openChat(chat: Chat) {
         val intent = Intent(this, ChatActivity::class.java).apply {
             putExtra("CHAT_NAME", chat.name)
+            putExtra("CHAT_ID", chat.id)
         }
         startActivity(intent)
     }

@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.mishgan325.chatappsocket.R
-import ru.mishgan325.chatappsocket.activities.Message
+import ru.mishgan325.chatappsocket.models.Message
 
-class ChatAdapter(private val messages: List<Message>) :
+class ChatAdapter(private var messages: List<Message>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -45,14 +45,20 @@ class ChatAdapter(private val messages: List<Message>) :
 
     class MyMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(message: Message) {
-            itemView.findViewById<TextView>(R.id.tvMessage).text = message.text
+            itemView.findViewById<TextView>(R.id.tvMessage).text = message.content
         }
     }
 
     class OtherMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(message: Message) {
-            itemView.findViewById<TextView>(R.id.tvSender).text = message.sender
-            itemView.findViewById<TextView>(R.id.tvMessage).text = message.text
+            itemView.findViewById<TextView>(R.id.tvSender).text = message.sender.username
+            itemView.findViewById<TextView>(R.id.tvMessage).text = message.content
         }
+    }
+
+
+    fun updateMessages(newMessages: List<Message>) {
+        messages = newMessages
+        notifyDataSetChanged()
     }
 }
