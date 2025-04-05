@@ -1,4 +1,4 @@
-package ru.mishgan325.chatappsocket
+package ru.mishgan325.chatappsocket.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,6 +6,8 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ru.mishgan325.chatappsocket.adapters.ChatListAdapter
+import ru.mishgan325.chatappsocket.R
 
 class ChatSelectActivity : AppCompatActivity() {
 

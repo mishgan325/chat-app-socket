@@ -1,4 +1,4 @@
-package ru.mishgan325.chatappsocket
+package ru.mishgan325.chatappsocket.activities
 
 import android.os.Bundle
 import android.widget.Button
@@ -8,6 +8,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ru.mishgan325.chatappsocket.adapters.ChatAdapter
+import ru.mishgan325.chatappsocket.R
 
 class ChatActivity : AppCompatActivity() {
 

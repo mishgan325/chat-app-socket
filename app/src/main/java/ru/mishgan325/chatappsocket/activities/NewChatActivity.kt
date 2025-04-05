@@ -1,13 +1,15 @@
-package ru.mishgan325.chatappsocket
+package ru.mishgan325.chatappsocket.activities
 
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ru.mishgan325.chatappsocket.R
+import ru.mishgan325.chatappsocket.adapters.User
+import ru.mishgan325.chatappsocket.adapters.UserAdapter
 
 class NewChatActivity : AppCompatActivity() {
 
