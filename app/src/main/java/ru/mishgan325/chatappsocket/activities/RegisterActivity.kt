@@ -69,6 +69,7 @@ class RegisterActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     response.body()?.let {
                         sessionManager.saveAuthToken(it.token)
+                        sessionManager.saveUsername(username)
                         startActivity(Intent(this@RegisterActivity, ChatSelectActivity::class.java))
                         finish()
                     }

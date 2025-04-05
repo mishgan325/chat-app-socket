@@ -17,11 +17,19 @@ class SessionManager(context: Context) {
         )
     }
 
+    // Сохранение данных
     fun saveAuthToken(token: String) {
         prefs.edit().putString("jwt_token", token).apply()
     }
 
+    fun saveUsername(username: String) {
+        prefs.edit().putString("username", username).apply()
+    }
+
+    // Получение данных
     fun getAuthToken(): String? = prefs.getString("jwt_token", null)
+    fun getUsername(): String? = prefs.getString("username", null)
+
 
     fun isLoggedIn(): Boolean {
         val token = getAuthToken()
