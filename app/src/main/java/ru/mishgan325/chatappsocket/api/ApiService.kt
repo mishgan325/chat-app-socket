@@ -15,6 +15,9 @@ interface ApiService {
     @POST("auth/sign-up")
     suspend fun register(@Body registerRequest: RegisterRequest): Response<RegisterResponse>
 
+    @POST("/auth/who-am-i")
+    suspend fun whoami(): Response<WhoamiResponse>
+
     @GET("api/chat-rooms/my")
     suspend fun getMyChatRooms(): Response<List<ChatRoomDto>>
 
@@ -22,5 +25,15 @@ interface ApiService {
     suspend fun getChatMessages(
         @Path("chat_id") chatId: String
     ): Response<List<ChatMessageDto>>
+
+//
+//    @GET("api/users")
+//    suspend fun getUsers(): Response<List<UserDto>>
+//
+//    @POST("api/chat-rooms/private")
+//    suspend fun createPrivateChat(@Body request: CreatePrivateChatRequest): Response<Unit>
+//
+//    @POST("api/chat-rooms/group")
+//    suspend fun createGroupChat(@Body request: CreateGroupChatRequest): Response<Unit>
 
 }

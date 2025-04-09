@@ -20,3 +20,8 @@ data class RegisterRequest(
 data class RegisterResponse(
     @SerializedName("token") val token: String
 )
+
+data class WhoamiResponse(
+    @SerializedName("id") val id: Long,
+    @SerializedName("username") val username: String
+)
