@@ -26,10 +26,13 @@ class SessionManager(context: Context) {
         prefs.edit().putString("username", username).apply()
     }
 
+
+    fun saveUserId(id: Long) = prefs.edit().putLong("user_id", id).apply()
+
     // Получение данных
     fun getAuthToken(): String? = prefs.getString("jwt_token", null)
     fun getUsername(): String? = prefs.getString("username", null)
-
+    fun getUserId(): Long? = prefs.getLong("user_id", -1).takeIf { it != -1L }
 
     fun isLoggedIn(): Boolean {
         val token = getAuthToken()
@@ -41,4 +44,5 @@ class SessionManager(context: Context) {
     fun logout() {
         prefs.edit().remove("jwt_token").apply()
     }
+
 }
