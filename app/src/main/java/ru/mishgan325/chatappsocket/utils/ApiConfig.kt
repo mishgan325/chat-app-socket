@@ -7,7 +7,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiConfig {
-    private const val BASE_URL = "http://10.0.2.2:8080/"
+    private const val BASE_URL = "http://78.24.223.206:8081/"
     private var sessionManager: SessionManager? = null
     private val excludedPaths = listOf("/auth/sign-in", "/auth/sign-up")
 
