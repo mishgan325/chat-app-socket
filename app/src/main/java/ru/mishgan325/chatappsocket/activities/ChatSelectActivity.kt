@@ -3,16 +3,19 @@ package ru.mishgan325.chatappsocket.activities
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
 import ru.mishgan325.chatappsocket.adapters.ChatListAdapter
 import ru.mishgan325.chatappsocket.R
 import ru.mishgan325.chatappsocket.api.ApiService
+import ru.mishgan325.chatappsocket.api.AuthRequest
 import ru.mishgan325.chatappsocket.models.Chat
 import ru.mishgan325.chatappsocket.utils.ApiConfig
 import ru.mishgan325.chatappsocket.utils.SessionManager
@@ -20,7 +23,7 @@ import ru.mishgan325.chatappsocket.utils.SessionManager
 class ChatSelectActivity : AppCompatActivity() {
 
     private lateinit var chatAdapter: ChatListAdapter
-    private lateinit var authApi: ApiService
+    private lateinit var apiService: ApiService
     private lateinit var sessionManager: SessionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,26 +32,70 @@ class ChatSelectActivity : AppCompatActivity() {
         // Проверка авторизации перед установкой контента
         sessionManager = SessionManager(this)
         if (!sessionManager.isLoggedIn()) {
-            redirectToLogin()
+            logout()
             return
         }
 
-        setContentView(R.layout.activity_chat_select)
+        // TODO: regenerate token
+        // update username
+        // update id
 
         // Инициализация зависимостей
-        authApi = ApiConfig.retrofit.create(ApiService::class.java)
+        apiService = ApiConfig.retrofit.create(ApiService::class.java)
+
+        whoami()
+
+        setContentView(R.layout.activity_chat_select)
+
 
         setupRecyclerView()
         loadChatRooms()
 
-        findViewById<Button>(R.id.btnNewChat).setOnClickListener {
+        findViewById<FloatingActionButton>(R.id.fabAddChat).setOnClickListener {
             startActivity(Intent(this, NewChatActivity::class.java))
         }
     }
 
-    private fun redirectToLogin() {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_logout -> {
+                sessionManager.logout()
+                logout()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+
+    private fun whoami() {
+        lifecycleScope.launch {
+            try {
+                val response = apiService.whoami()
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        sessionManager.saveUserId(it.id)
+                        sessionManager.saveUsername(it.username)
+                    }
+                } else {
+                    showError("Перезайдите")
+                }
+            } catch (e: Exception) {
+                showError("Ошибка сети: ${e.localizedMessage}")
+            }
+        }
+    }
+
+    private fun logout() {
+        sessionManager.logout()
         startActivity(Intent(this, LoginActivity::class.java))
-        finish() // Закрываем текущую активность чтобы нельзя было вернуться назад
+        finish()
     }
 
     private fun setupRecyclerView() {
@@ -63,7 +110,7 @@ class ChatSelectActivity : AppCompatActivity() {
     private fun loadChatRooms() {
         lifecycleScope.launch {
             try {
-                val response = authApi.getMyChatRooms()
+                val response = apiService.getMyChatRooms()
                 if (response.isSuccessful) {
                     response.body()?.let { chatRooms ->
                         val chats = chatRooms.map {
@@ -73,11 +120,12 @@ class ChatSelectActivity : AppCompatActivity() {
                                 type = it.type
                             )
                         }
+                        Log.d("Chats", chats.toString())
                         chatAdapter.updateChats(chats)
                     }
                 } else {
                     showError("Ошибка: ${response.code()}")
-                    redirectToLogin()
+                    logout()
                 }
             } catch (e: Exception) {
                 showError("Ошибка сети: ${e.localizedMessage}")
@@ -95,6 +143,7 @@ class ChatSelectActivity : AppCompatActivity() {
 
     private fun showError(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        Log.e("Chat select activity", message)
     }
 
 }

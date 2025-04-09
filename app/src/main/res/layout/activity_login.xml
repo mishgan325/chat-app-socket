@@ -2,42 +2,81 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="32dp"
-    android:gravity="center">
+    android:gravity="center"
+    android:background="?attr/colorSurface">
 
-    <EditText
-        android:id="@+id/etUsername"
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Никнейм"
-        android:inputType="text"/>
+        app:boxStrokeColor="?attr/colorPrimary"
+        app:shapeAppearance="@style/ShapeAppearance.Material3.SmallComponent"
+        app:hintTextColor="?attr/colorOnSurfaceVariant"
+        app:startIconDrawable="@drawable/ic_person"
+        app:startIconTint="?attr/colorOnSurfaceVariant"
+        tools:ignore="MissingClass">
 
-    <EditText
-        android:id="@+id/etPassword"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Никнейм"
+            android:inputType="text"
+            android:textColor="?attr/colorOnSurface"
+            android:textColorHint="?attr/colorOnSurfaceVariant"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Пароль"
-        android:inputType="textPassword"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        app:boxStrokeColor="?attr/colorPrimary"
+        app:shapeAppearance="@style/ShapeAppearance.Material3.SmallComponent"
+        app:hintTextColor="?attr/colorOnSurfaceVariant"
+        app:startIconDrawable="@drawable/ic_login"
+        app:startIconTint="?attr/colorOnSurfaceVariant">
 
-    <Button
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Пароль"
+            android:inputType="textPassword"
+            android:textColor="?attr/colorOnSurface"
+            android:textColorHint="?attr/colorOnSurfaceVariant"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:text="Войти"
-        android:layout_marginTop="24dp"/>
+        app:backgroundTint="?attr/colorPrimary"
+        app:cornerRadius="20dp"
+        app:elevation="0dp"
+        app:rippleColor="?attr/colorOnPrimary"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tvRegister"
+        style="@style/TextAppearance.Material3.BodyMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Нет аккаунта? Зарегистрироваться"
-        android:textColor="@color/colorPrimary"
         android:layout_marginTop="16dp"
         android:clickable="true"
-        style="?android:attr/textAppearanceSmall"/>
+        android:focusable="true"
+        android:minHeight="48dp"
+        android:text="Нет аккаунта? Зарегистрироваться"
+        android:textColor="?attr/colorPrimary"
+        app:autoSizeTextType="uniform"
+        app:background="?attr/selectableItemBackground" />
 
 </LinearLayout>
