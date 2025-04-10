@@ -26,7 +26,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.ChatActivity" />
-        <activity android:name=".activities.NewChatActivity" />
+        <activity android:name=".activities.NewChatUsersSelectActivity" />
+        <activity android:name=".activities.NewChatNameSelectActivity" />
     </application>
     <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
