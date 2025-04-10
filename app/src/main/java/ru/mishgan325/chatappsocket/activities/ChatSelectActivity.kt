@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 import ru.mishgan325.chatappsocket.adapters.ChatListAdapter
 import ru.mishgan325.chatappsocket.R
 import ru.mishgan325.chatappsocket.api.ApiService
-import ru.mishgan325.chatappsocket.api.AuthRequest
 import ru.mishgan325.chatappsocket.models.Chat
 import ru.mishgan325.chatappsocket.utils.ApiConfig
 import ru.mishgan325.chatappsocket.utils.SessionManager
@@ -29,18 +28,7 @@ class ChatSelectActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Проверка авторизации перед установкой контента
         sessionManager = SessionManager(this)
-        if (!sessionManager.isLoggedIn()) {
-            logout()
-            return
-        }
-
-        // TODO: regenerate token
-        // update username
-        // update id
-
-        // Инициализация зависимостей
         apiService = ApiConfig.retrofit.create(ApiService::class.java)
 
         whoami()
@@ -49,15 +37,20 @@ class ChatSelectActivity : AppCompatActivity() {
 
 
         setupRecyclerView()
+
+        setupFAB()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // TODO: regenerate token
+
         loadChatRooms()
 
-        findViewById<FloatingActionButton>(R.id.fabAddChat).setOnClickListener {
-            startActivity(Intent(this, NewChatActivity::class.java))
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
@@ -73,6 +66,20 @@ class ChatSelectActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    private fun setupRecyclerView() {
+        val recyclerView = findViewById<RecyclerView>(R.id.rvChatList)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        chatAdapter = ChatListAdapter(emptyList()) { chat: Chat ->
+            openChat(chat)
+        }
+        recyclerView.adapter = chatAdapter
+    }
+
+    private fun setupFAB() {
+        findViewById<FloatingActionButton>(R.id.fabAddChat).setOnClickListener {
+            startActivity(Intent(this, NewChatUsersSelectActivity::class.java))
+        }
+    }
 
     private fun whoami() {
         lifecycleScope.launch {
@@ -98,15 +105,6 @@ class ChatSelectActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun setupRecyclerView() {
-        val recyclerView = findViewById<RecyclerView>(R.id.rvChatList)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        chatAdapter = ChatListAdapter(emptyList()) { chat:Chat ->
-            openChat(chat)
-        }
-        recyclerView.adapter = chatAdapter
-    }
-
     private fun loadChatRooms() {
         lifecycleScope.launch {
             try {
@@ -115,9 +113,7 @@ class ChatSelectActivity : AppCompatActivity() {
                     response.body()?.let { chatRooms ->
                         val chats = chatRooms.map {
                             Chat(
-                                id = it.id,
-                                name = it.name,
-                                type = it.type
+                                id = it.id, name = it.name, type = it.type
                             )
                         }
                         Log.d("Chats", chats.toString())

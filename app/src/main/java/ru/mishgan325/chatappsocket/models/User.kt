@@ -1,7 +1,6 @@
 package ru.mishgan325.chatappsocket.models
 
-data class Chat(
+data class User(
     val id: Long,
-    val name: String,
-    val type: String
+    val username: String
 )
