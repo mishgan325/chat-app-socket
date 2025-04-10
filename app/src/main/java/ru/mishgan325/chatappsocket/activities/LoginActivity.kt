@@ -52,10 +52,12 @@ class LoginActivity : AppCompatActivity() {
                 showError("Введите имя пользователя")
                 false
             }
+
             password.isEmpty() -> {
                 showError("Введите пароль")
                 false
             }
+
             else -> true
         }
     }
@@ -71,7 +73,7 @@ class LoginActivity : AppCompatActivity() {
                         finish()
                     }
                 } else {
-                    showError("Неверные учетные данные")
+                    showError("Неверные учетные данные ${response.body().toString()}")
                 }
             } catch (e: Exception) {
                 showError("Ошибка сети: ${e.localizedMessage}")
