@@ -5,8 +5,10 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 import ru.mishgan325.chatappsocket.dto.ChatMessageDto
 import ru.mishgan325.chatappsocket.dto.ChatRoomDto
+import ru.mishgan325.chatappsocket.dto.UserDto
 
 interface ApiService {
     @POST("auth/sign-in")
@@ -21,19 +23,25 @@ interface ApiService {
     @GET("api/chat-rooms/my")
     suspend fun getMyChatRooms(): Response<List<ChatRoomDto>>
 
+    @GET("api/users")
+    suspend fun getUsers(): Response<List<UserDto>>
+
     @GET("api/chat-messages/{chat_id}")
     suspend fun getChatMessages(
         @Path("chat_id") chatId: String
     ): Response<List<ChatMessageDto>>
 
-//
-//    @GET("api/users")
-//    suspend fun getUsers(): Response<List<UserDto>>
-//
-//    @POST("api/chat-rooms/private")
-//    suspend fun createPrivateChat(@Body request: CreatePrivateChatRequest): Response<Unit>
-//
-//    @POST("api/chat-rooms/group")
-//    suspend fun createGroupChat(@Body request: CreateGroupChatRequest): Response<Unit>
+    @POST("api/chat-rooms/private")
+    suspend fun createPrivateChat(@Body request: CreatePrivateChatRequest): Response<Unit>
 
+    @POST("api/chat-rooms/group")
+    suspend fun createGroupChat(@Body request: CreateGroupChatRequest): Response<Unit>
+
+    @GET("api/chat-messages/{chatRoomId}")
+    suspend fun getChatMessagesWithPagination(
+        @Path("chatRoomId") chatRoomId: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("sort") sort: String
+    ): Response<List<ChatMessageDto>>
 }
