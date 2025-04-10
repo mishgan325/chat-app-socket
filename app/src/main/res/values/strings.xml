@@ -2,4 +2,10 @@
     <string name="app_name">chat-app-socket</string>
     <string name="action_logout">Выйти</string>
     <string name="add_new_chat">Add new chat</string>
+    <string name="username">Никнейм</string>
+    <string name="password">Пароль</string>
+    <string name="login">Войти</string>
+    <string name="sign_up">Нет аккаунта? Зарегистрироваться</string>
+    <string name="email">Почта</string>
+    <string name="register">Зарегистрироваться</string>
 </resources>

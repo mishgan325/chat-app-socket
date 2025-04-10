@@ -25,7 +25,7 @@
             android:id="@+id/etUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Никнейм"
+            android:hint="@string/username"
             android:inputType="text"
             android:textColor="?attr/colorOnSurface"
             android:textColorHint="?attr/colorOnSurfaceVariant"/>
@@ -47,7 +47,7 @@
             android:id="@+id/etPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Пароль"
+            android:hint="@string/password"
             android:inputType="textPassword"
             android:textColor="?attr/colorOnSurface"
             android:textColorHint="?attr/colorOnSurfaceVariant"/>
@@ -59,7 +59,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Войти"
+        android:text="@string/login"
         app:backgroundTint="?attr/colorPrimary"
         app:cornerRadius="20dp"
         app:elevation="0dp"
@@ -74,7 +74,7 @@
         android:clickable="true"
         android:focusable="true"
         android:minHeight="48dp"
-        android:text="Нет аккаунта? Зарегистрироваться"
+        android:text="@string/sign_up"
         android:textColor="?attr/colorPrimary"
         app:autoSizeTextType="uniform"
         app:background="?attr/selectableItemBackground" />
