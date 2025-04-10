@@ -31,16 +31,16 @@ data class WhoamiResponse(
 
 data class CreatePrivateChatRequest(
     @SerializedName("name") val name: String,
-    @SerializedName("userId") val user1Id: Long
+    @SerializedName("user_id") val user_id: Long
 )
 
 
 data class CreateGroupChatRequest(
     @SerializedName("name") val name: String,
-    @SerializedName("memberIds") val user1Id: List<Long>
+    @SerializedName("memberIds") val memberIds: List<Long>
 )
 
 
 data class AddUserRequest(
-    @SerializedName("userId") val name: Long
+    @SerializedName("user_id") val user_id: Long
 )
