@@ -10,7 +10,7 @@ import ru.mishgan325.chatappsocket.dto.ChatMessageDto
 import ru.mishgan325.chatappsocket.dto.ChatRoomDto
 import ru.mishgan325.chatappsocket.dto.UserDto
 
-interface ApiService {
+interface ApiInterface {
     @POST("auth/sign-in")
     suspend fun login(@Body authRequest: AuthRequest): Response<AuthResponse>
 
