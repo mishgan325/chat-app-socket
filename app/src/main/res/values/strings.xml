@@ -8,4 +8,6 @@
     <string name="sign_up">Нет аккаунта? Зарегистрироваться</string>
     <string name="email">Почта</string>
     <string name="register">Зарегистрироваться</string>
+    <string name="chats">Чаты</string>
+    <string name="next">Далее</string>
 </resources>
