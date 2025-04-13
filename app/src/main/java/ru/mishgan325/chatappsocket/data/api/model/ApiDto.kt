@@ -13,8 +13,8 @@ data class AuthResponse(
 
 
 data class RegisterRequest(
-    @SerializedName("username") val username: String,
     @SerializedName("email") val email: String,
+    @SerializedName("username") val username: String,
     @SerializedName("password") val password: String
 )
 
