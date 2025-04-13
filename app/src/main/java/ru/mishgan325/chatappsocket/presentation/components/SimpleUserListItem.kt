@@ -1,4 +1,4 @@
-package ru.mishgan325.chatappsocket.screens.components
+package ru.mishgan325.chatappsocket.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,10 +16,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun SelectableUserListItem(
+fun SimpleUserListItem(
     userName: String,
-    isChecked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -43,10 +40,6 @@ fun SelectableUserListItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
-            Checkbox(
-                checked = isChecked, onCheckedChange = onCheckedChange
-            )
-
             Text(
                 text = userName,
                 style = MaterialTheme.typography.bodyLarge,
@@ -61,9 +54,10 @@ fun SelectableUserListItem(
 
 @Preview
 @Composable
-fun SelectableUserListItemPreview() {
+fun SimpleUserListItemPreview() {
     MaterialTheme {
-        SelectableUserListItem(
-            userName = "John Doe", isChecked = true, onCheckedChange = {})
+        SimpleUserListItem(
+            userName = "John Doe"
+        )
     }
 }

@@ -1,4 +1,4 @@
-package ru.mishgan325.chatappsocket.screens
+package ru.mishgan325.chatappsocket.presentation.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,7 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.mishgan325.chatappsocket.screens.components.ChatListItem
+import ru.mishgan325.chatappsocket.presentation.components.ChatListItem
 import ru.mishgan325.chatappsocket.R
 import ru.mishgan325.chatappsocket.models.Chat
 

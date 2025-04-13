@@ -1,4 +1,4 @@
-package ru.mishgan325.chatappsocket.api
+package ru.mishgan325.chatappsocket.data.api.model
 
 import com.google.gson.annotations.SerializedName
 
@@ -28,6 +28,12 @@ data class WhoamiResponse(
     @SerializedName("username") val username: String
 )
 
+
+data class ChatRoomDtoResponse(
+    @SerializedName("id") val id: Long,
+    @SerializedName("name") val name: String,
+    @SerializedName("type") val type: String
+)
 
 data class CreatePrivateChatRequest(
     @SerializedName("name") val name: String,
