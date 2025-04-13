@@ -1,4 +1,4 @@
-package ru.mishgan325.chatappsocket.viewmodels
+package ru.mishgan325.chatappsocket.utils
 
 import retrofit2.Response
 

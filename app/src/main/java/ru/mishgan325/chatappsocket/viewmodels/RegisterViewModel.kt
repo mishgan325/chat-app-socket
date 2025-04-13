@@ -9,40 +9,44 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import ru.mishgan325.chatappsocket.data.api.model.AuthResponse
-import ru.mishgan325.chatappsocket.domain.usecases.LoginUseCase
+import ru.mishgan325.chatappsocket.data.api.model.RegisterResponse
+import ru.mishgan325.chatappsocket.domain.usecases.RegisterUseCase
 import ru.mishgan325.chatappsocket.utils.NetworkResult
 import javax.inject.Inject
 
+private const val TAG = "RegisterViewModel"
+
 @HiltViewModel
-class LoginViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase
+class RegisterViewModel @Inject constructor(
+    private val registerUseCase: RegisterUseCase
 ) : ViewModel() {
 
-    private val _authResponse = MutableLiveData<NetworkResult<AuthResponse>>()
-    val authResponse: LiveData<NetworkResult<AuthResponse>> get() = _authResponse
+    private val _authResponse = MutableLiveData<NetworkResult<RegisterResponse>>()
+    val authResponse: LiveData<NetworkResult<RegisterResponse>> get() = _authResponse
 
     private val _authState = MutableStateFlow<NetworkResult<Unit>>(NetworkResult.Loading())
     val authState: StateFlow<NetworkResult<Unit>> = _authState
 
-    fun login(username: String, password: String) {
+    fun register(email: String, username: String, password: String) {
         viewModelScope.launch {
             _authState.value = NetworkResult.Loading()
 
-            loginUseCase.invoke(username, password).let { result ->
+            registerUseCase.invoke(email, username, password).let { result ->
                 _authResponse.value = result
 
                 when (result) {
                     is NetworkResult.Error -> {
-                        Log.d("LoginViewModel", "Error: ${result.message}")
+                        Log.d(TAG, "Error: ${result.message}")
                         _authState.value = NetworkResult.Error(null, result.message)
                     }
+
                     is NetworkResult.Loading -> {
-                        Log.d("LoginViewModel", "Auth is loading")
+                        Log.d(TAG, "Register is loading")
                         _authState.value = NetworkResult.Loading()
                     }
+
                     is NetworkResult.Success -> {
-                        Log.d("LoginViewModel", "SUCCESS: ${result.data?.token}")
+                        Log.d(TAG, "SUCCESS: ${result.data?.token}")
                         _authState.value = NetworkResult.Success(Unit)
                     }
                 }

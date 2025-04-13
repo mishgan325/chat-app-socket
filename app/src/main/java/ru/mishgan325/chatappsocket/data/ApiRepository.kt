@@ -8,8 +8,8 @@ import ru.mishgan325.chatappsocket.data.api.model.ChatRoomDtoResponse
 import ru.mishgan325.chatappsocket.data.api.model.RegisterRequest
 import ru.mishgan325.chatappsocket.data.api.model.RegisterResponse
 import ru.mishgan325.chatappsocket.dto.ChatRoomDto
-import ru.mishgan325.chatappsocket.viewmodels.BaseApiResponse
-import ru.mishgan325.chatappsocket.viewmodels.NetworkResult
+import ru.mishgan325.chatappsocket.utils.BaseApiResponse
+import ru.mishgan325.chatappsocket.utils.NetworkResult
 import javax.inject.Inject
 
 

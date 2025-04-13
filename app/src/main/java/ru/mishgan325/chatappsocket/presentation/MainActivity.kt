@@ -1,5 +1,6 @@
 package ru.mishgan325.chatappsocket.presentation
 
+//import ru.mishgan325.chatappsocket.presentation.screens.RegisterScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,18 +12,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import ru.mishgan325.chatappsocket.presentation.screens.LoginScreen
-//import ru.mishgan325.chatappsocket.presentation.screens.RegisterScreen
+import ru.mishgan325.chatappsocket.presentation.screens.RegisterScreen
 import ru.mishgan325.chatappsocket.presentation.ui.theme.ChatappsocketTheme
-import ru.mishgan325.chatappsocket.utils.ApiConfig
-import ru.mishgan325.chatappsocket.utils.SessionManager
 import ru.mishgan325.chatappsocket.viewmodels.LoginViewModel
+import ru.mishgan325.chatappsocket.viewmodels.RegisterViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-//    private lateinit var mainApi: MainApi
+    //    private lateinit var mainApi: MainApi
 //    private lateinit var sessionManager: SessionManager
     private val loginViewModel: LoginViewModel by viewModels()
+    private val registerViewModel: RegisterViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,23 +37,18 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 NavHost(
-                    navController = navController,
-                    startDestination = "login"
+                    navController = navController, startDestination = "login"
                 ) {
                     composable("login") {
                         LoginScreen(
-                            navHostController = navController,
-                            loginViewModel = loginViewModel
+                            navController, loginViewModel
                         )
                     }
 
                     composable("register") {
-                        Text(text = "Register screen будет здесь")
-//                        RegisterScreen(
-////                            mainApi = mainApi,
-//                            navHostController = navController,
-//                            viewModel = TODO()
-//                        )
+                        RegisterScreen(
+                            navController, registerViewModel
+                        )
                     }
 
                     composable("chat_select") {
