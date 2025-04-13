@@ -14,8 +14,6 @@ import ru.mishgan325.chatappsocket.domain.usecases.RegisterUseCase
 import ru.mishgan325.chatappsocket.utils.NetworkResult
 import javax.inject.Inject
 
-private const val TAG = "RegisterViewModel"
-
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     private val registerUseCase: RegisterUseCase
@@ -26,6 +24,8 @@ class RegisterViewModel @Inject constructor(
 
     private val _authState = MutableStateFlow<NetworkResult<Unit>>(NetworkResult.Loading())
     val authState: StateFlow<NetworkResult<Unit>> = _authState
+
+    private val TAG = "RegisterViewModel"
 
     fun register(email: String, username: String, password: String) {
         viewModelScope.launch {

@@ -25,6 +25,8 @@ class LoginViewModel @Inject constructor(
     private val _authState = MutableStateFlow<NetworkResult<Unit>>(NetworkResult.Loading())
     val authState: StateFlow<NetworkResult<Unit>> = _authState
 
+    private val TAG = "LoginViewModel"
+
     fun login(username: String, password: String) {
         viewModelScope.launch {
             _authState.value = NetworkResult.Loading()
@@ -34,15 +36,15 @@ class LoginViewModel @Inject constructor(
 
                 when (result) {
                     is NetworkResult.Error -> {
-                        Log.d("LoginViewModel", "Error: ${result.message}")
+                        Log.d(TAG, "Error: ${result.message}")
                         _authState.value = NetworkResult.Error(null, result.message)
                     }
                     is NetworkResult.Loading -> {
-                        Log.d("LoginViewModel", "Auth is loading")
+                        Log.d(TAG, "Auth is loading")
                         _authState.value = NetworkResult.Loading()
                     }
                     is NetworkResult.Success -> {
-                        Log.d("LoginViewModel", "SUCCESS: ${result.data?.token}")
+                        Log.d(TAG, "SUCCESS: ${result.data?.token}")
                         _authState.value = NetworkResult.Success(Unit)
                     }
                 }
