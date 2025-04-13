@@ -10,4 +10,6 @@
     <string name="register">Зарегистрироваться</string>
     <string name="chats">Чаты</string>
     <string name="next">Далее</string>
+    <string name="loading">Загрузка чатов...</string>
+    <string name="error_loading_chats">Ошибка при загрузке чатов</string>
 </resources>

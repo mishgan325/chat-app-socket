@@ -46,11 +46,13 @@ fun LoginScreen(
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    val state = loginViewModel.authResponse.observeAsState().value ?: NetworkResult.Loading()
+    val state = loginViewModel.authResponse.observeAsState().value
 
-    if (state is NetworkResult.Success) {
-        LaunchedEffect(Unit) {
-            navHostController.navigate("chat_select")
+    LaunchedEffect(state) {
+        if (state is NetworkResult.Success) {
+            navHostController.navigate("chat_select") {
+                popUpTo("login") { inclusive = true }
+            }
         }
     }
 

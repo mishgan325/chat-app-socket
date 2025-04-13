@@ -12,11 +12,13 @@ import kotlinx.coroutines.launch
 import ru.mishgan325.chatappsocket.data.api.model.AuthResponse
 import ru.mishgan325.chatappsocket.domain.usecases.LoginUseCase
 import ru.mishgan325.chatappsocket.utils.NetworkResult
+import ru.mishgan325.chatappsocket.utils.SessionManager
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     private val _authResponse = MutableLiveData<NetworkResult<AuthResponse>>()
@@ -31,21 +33,27 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _authState.value = NetworkResult.Loading()
 
-            loginUseCase.invoke(username, password).let { result ->
-                _authResponse.value = result
+            val result = loginUseCase.invoke(username, password)
 
-                when (result) {
-                    is NetworkResult.Error -> {
-                        Log.d(TAG, "Error: ${result.message}")
-                        _authState.value = NetworkResult.Error(null, result.message)
-                    }
-                    is NetworkResult.Loading -> {
-                        Log.d(TAG, "Auth is loading")
-                        _authState.value = NetworkResult.Loading()
-                    }
-                    is NetworkResult.Success -> {
+            _authResponse.value = result
+
+            when (result) {
+                is NetworkResult.Error -> {
+                    Log.d(TAG, "Error: ${result.message}")
+                    _authState.value = NetworkResult.Error(null, result.message)
+                }
+
+                is NetworkResult.Loading -> {
+                    Log.d(TAG, "Auth is loading")
+                    _authState.value = NetworkResult.Loading()
+                }
+
+                is NetworkResult.Success -> {
+                    Log.d(TAG, "SUCCESS: ${result.data?.token}")
+                    _authState.value = NetworkResult.Success(Unit)
+                    result.data?.let { data ->
+                        sessionManager.saveAuthToken(data.token)
                         Log.d(TAG, "SUCCESS: ${result.data?.token}")
-                        _authState.value = NetworkResult.Success(Unit)
                     }
                 }
             }
