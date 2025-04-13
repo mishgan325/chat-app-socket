@@ -1,4 +1,4 @@
-package ru.mishgan325.chatappsocket.api
+package ru.mishgan325.chatappsocket.data.api
 
 import retrofit2.Response
 import retrofit2.http.Body
@@ -6,11 +6,12 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
+import ru.mishgan325.chatappsocket.data.api.model.*
 import ru.mishgan325.chatappsocket.dto.ChatMessageDto
 import ru.mishgan325.chatappsocket.dto.ChatRoomDto
 import ru.mishgan325.chatappsocket.dto.UserDto
 
-interface ApiInterface {
+interface ApiService {
     @POST("auth/sign-in")
     suspend fun login(@Body authRequest: AuthRequest): Response<AuthResponse>
 
@@ -28,7 +29,7 @@ interface ApiInterface {
 
     @GET("api/chat-messages/{chat_id}")
     suspend fun getChatMessages(
-        @Path("chat_id") chatId: String
+        @Path("chat_id") chatId: Long
     ): Response<List<ChatMessageDto>>
 
     @POST("api/chat-rooms/private")
@@ -39,7 +40,7 @@ interface ApiInterface {
 
     @GET("api/chat-messages/{chatRoomId}")
     suspend fun getChatMessagesWithPagination(
-        @Path("chatRoomId") chatRoomId: String,
+        @Path("chatRoomId") chatRoomId: Long,
         @Query("page") page: Int,
         @Query("size") size: Int,
         @Query("sort") sort: String

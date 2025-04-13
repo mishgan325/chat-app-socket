@@ -1,4 +1,4 @@
-package ru.mishgan325.chatappsocket.screens.components
+package ru.mishgan325.chatappsocket.presentation.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.mishgan325.chatappsocket.models.Chat
-import ru.mishgan325.chatappsocket.ui.theme.ChatappsocketTheme
+import ru.mishgan325.chatappsocket.presentation.ui.theme.ChatappsocketTheme
 
 @Composable
 fun ChatListItem(
@@ -24,7 +24,7 @@ fun ChatListItem(
             .fillMaxWidth()
             .padding(horizontal = 8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+//            containerColor = MaterialTheme.colorScheme.su,
             contentColor = MaterialTheme.colorScheme.onSurface
         ),
         shape = MaterialTheme.shapes.medium,

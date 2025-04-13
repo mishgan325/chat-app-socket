@@ -1,5 +1,8 @@
-package ru.mishgan325.chatappsocket.screens
+package ru.mishgan325.chatappsocket.presentation.screens
 
+import android.util.Log
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -26,23 +28,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import ru.mishgan325.chatappsocket.R
-import ru.mishgan325.chatappsocket.api.ApiInterface
-import ru.mishgan325.chatappsocket.viewmodels.AuthViewModel
+import ru.mishgan325.chatappsocket.viewmodels.LoginViewModel
 
 @Composable
-fun RegisterScreen(
+fun LoginScreen(
     modifier: Modifier = Modifier,
-    apiInterface: ApiInterface,
     navHostController: NavHostController,
-    viewModel: AuthViewModel
+    loginViewModel: LoginViewModel
 ) {
-    var email by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -51,30 +48,16 @@ fun RegisterScreen(
             .fillMaxSize()
             .padding(32.dp)
             .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        // Email Field
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text(stringResource(R.string.email)) },
-            leadingIcon = { Icon(painterResource(R.drawable.ic_email), null) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            colors = TextFieldDefaults.colors(),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(Modifier.height(16.dp))
-
         // Username Field
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
             label = { Text(stringResource(R.string.username)) },
             leadingIcon = { Icon(painterResource(R.drawable.ic_person), null) },
-            colors = TextFieldDefaults.colors(
-                // аналогичные цвета как в email field
-            ),
+            colors = TextFieldDefaults.colors(),
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -86,20 +69,18 @@ fun RegisterScreen(
             onValueChange = { password = it },
             label = { Text(stringResource(R.string.password)) },
             leadingIcon = { Icon(painterResource(R.drawable.ic_login), null) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             visualTransformation = PasswordVisualTransformation(),
-            colors = TextFieldDefaults.colors(
-                // аналогичные цвета
-            ),
+            colors = TextFieldDefaults.colors(),
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(24.dp))
 
-        // Register Button
+        // Login Button
         Button(
             onClick = {
-                viewModel
+                loginViewModel.login(username, password)
+                Log.d("Login result", loginViewModel.authResponse.toString())
             },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
@@ -108,15 +89,26 @@ fun RegisterScreen(
                 contentColor = MaterialTheme.colorScheme.onPrimary
             )
         ) {
-            Text(stringResource(R.string.register))
+            Text(stringResource(R.string.login))
         }
-    }
 
+        Spacer(Modifier.height(16.dp))
+
+        // Register Text
+        Text(
+            text = stringResource(R.string.sign_up),
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .clickable(onClick = { navHostController.navigate("register") })
+                .padding(12.dp),
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
 }
 
 
 //@Composable
 //@Preview
-//fun RegisterScreenPreview() {
-//    RegisterScreen({}, apiInterface = apiService)
+//fun LoginScreenPreview() {
+//    LoginScreen(apiInterface = apiService, navHostController = navController)
 //}
