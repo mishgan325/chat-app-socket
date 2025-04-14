@@ -36,8 +36,8 @@ import androidx.navigation.NavHostController
 import ru.mishgan325.chatappsocket.presentation.components.ChatListItem
 import ru.mishgan325.chatappsocket.R
 import ru.mishgan325.chatappsocket.dto.ChatRoomDto
-import ru.mishgan325.chatappsocket.dto.toChat
 import ru.mishgan325.chatappsocket.models.Chat
+import ru.mishgan325.chatappsocket.presentation.navigation.Screen
 import ru.mishgan325.chatappsocket.utils.NetworkResult
 import ru.mishgan325.chatappsocket.viewmodels.ChatListViewModel
 import ru.mishgan325.chatappsocket.viewmodels.LoginViewModel
@@ -70,7 +70,7 @@ fun ChatListScreen(
     val chats: List<Chat> = when (state) {
         is NetworkResult.Success -> state.data?.map { it.toChat() } ?: emptyList()
         is NetworkResult.Error -> {
-            navHostController.navigate("login")
+            navHostController.navigate(Screen.Login.route)
             emptyList()
         }
         is NetworkResult.Loading -> emptyList()
@@ -89,7 +89,7 @@ fun ChatListScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navHostController.navigate("c")
+                    navHostController.navigate(Screen.CreateNewChat.route)
                 },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
