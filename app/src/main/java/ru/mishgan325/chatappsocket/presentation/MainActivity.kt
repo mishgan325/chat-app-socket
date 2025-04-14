@@ -24,12 +24,14 @@ import ru.mishgan325.chatappsocket.dto.TabBarItem
 import ru.mishgan325.chatappsocket.presentation.components.TabView
 import ru.mishgan325.chatappsocket.presentation.navigation.Screen
 import ru.mishgan325.chatappsocket.presentation.screens.ChatListScreen
+import ru.mishgan325.chatappsocket.presentation.screens.CreateNewChatScreen
 import ru.mishgan325.chatappsocket.presentation.screens.SettingsScreen
 import ru.mishgan325.chatappsocket.presentation.screens.authorization.LoginScreen
 import ru.mishgan325.chatappsocket.presentation.screens.authorization.RegisterScreen
 import ru.mishgan325.chatappsocket.presentation.ui.theme.ChatappsocketTheme
 import ru.mishgan325.chatappsocket.utils.SessionManager
 import ru.mishgan325.chatappsocket.viewmodels.ChatListViewModel
+import ru.mishgan325.chatappsocket.viewmodels.CreateNewChatViewModel
 import ru.mishgan325.chatappsocket.viewmodels.LoginViewModel
 import ru.mishgan325.chatappsocket.viewmodels.RegisterViewModel
 
@@ -39,6 +41,7 @@ class MainActivity : ComponentActivity() {
     private val loginViewModel: LoginViewModel by viewModels()
     private val registerViewModel: RegisterViewModel by viewModels()
     private val chatListViewModel: ChatListViewModel by viewModels()
+    private val createNewChatViewModel: CreateNewChatViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,8 +105,8 @@ class MainActivity : ComponentActivity() {
                             SettingsScreen(navController)
                         }
 
-                        composable(Screen.SelectUsersNewChat.route) {
-                            Text(text = "New chat users select screen будет здесь")
+                        composable(Screen.CreateNewChat.route) {
+                            CreateNewChatScreen(navController, createNewChatViewModel)
                         }
                     }
                 }

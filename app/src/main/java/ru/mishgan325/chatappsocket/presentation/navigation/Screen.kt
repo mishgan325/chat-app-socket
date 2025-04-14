@@ -5,5 +5,5 @@ sealed class Screen(val route: String) {
     object Register : Screen("Register")
     object Chats : Screen("Chats")
     object Settings : Screen("Settings")
-    object SelectUsersNewChat : Screen("Select users")
+    object CreateNewChat : Screen("New chat")
 }
