@@ -50,7 +50,7 @@ fun LoginScreen(
 
     LaunchedEffect(state) {
         if (state is NetworkResult.Success) {
-            navHostController.navigate("chat_select") {
+            navHostController.navigate(Screen.Chats.route) {
                 popUpTo("login") { inclusive = true }
             }
         }
@@ -111,7 +111,7 @@ fun LoginScreen(
             text = stringResource(R.string.sign_up),
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
-                .clickable(onClick = { navHostController.navigate(Screen.Chats.route) })
+                .clickable(onClick = { navHostController.navigate(Screen.Register.route) })
                 .padding(12.dp),
             style = MaterialTheme.typography.bodyMedium
         )
