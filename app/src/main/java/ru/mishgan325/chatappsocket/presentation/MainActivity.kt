@@ -86,7 +86,7 @@ class MainActivity : ComponentActivity() {
                     NavHost(
                         navController = navController,
                         startDestination = startDestination,
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(bottom=innerPadding.calculateBottomPadding())
                     ) {
                         composable("Login") {
                             LoginScreen(navController, loginViewModel)
@@ -126,8 +126,16 @@ fun TabView(tabBarItems: List<TabBarItem>, navController: NavController) {
             NavigationBarItem(
                 selected = selectedTabIndex == index,
                 onClick = {
-                    selectedTabIndex = index
-                    navController.navigate(tabBarItem.title)
+                    if (selectedTabIndex != index) {
+                        selectedTabIndex = index
+                        navController.navigate(tabBarItem.title) {
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
                 },
                 icon = {
                     TabBarIconView(
