@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -67,43 +68,45 @@ fun RegisterScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Email Field
+
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
             label = { Text(stringResource(R.string.email)) },
             leadingIcon = { Icon(painterResource(R.drawable.ic_email), null) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            colors = TextFieldDefaults.colors(),
-            modifier = Modifier.fillMaxWidth()
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            )
         )
 
         Spacer(Modifier.height(16.dp))
 
-        // Username Field
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
             label = { Text(stringResource(R.string.username)) },
             leadingIcon = { Icon(painterResource(R.drawable.ic_person), null) },
-            colors = TextFieldDefaults.colors(
-                // аналогичные цвета как в email field
-            ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
         )
 
         Spacer(Modifier.height(16.dp))
 
-        // Password Field
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
             label = { Text(stringResource(R.string.password)) },
             leadingIcon = { Icon(painterResource(R.drawable.ic_login), null) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             visualTransformation = PasswordVisualTransformation(),
-            colors = TextFieldDefaults.colors(),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Next
+            )
         )
 
         Spacer(Modifier.height(32.dp))
