@@ -19,9 +19,9 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun SelectableUserListItem(
     userName: String,
-    isChecked: Boolean,
+    isSelected: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier
@@ -44,7 +44,8 @@ fun SelectableUserListItem(
             horizontalArrangement = Arrangement.Start
         ) {
             Checkbox(
-                checked = isChecked, onCheckedChange = onCheckedChange
+                checked = isSelected,
+                onCheckedChange = onCheckedChange
             )
 
             Text(
@@ -64,6 +65,9 @@ fun SelectableUserListItem(
 fun SelectableUserListItemPreview() {
     MaterialTheme {
         SelectableUserListItem(
-            userName = "John Doe", isChecked = true, onCheckedChange = {})
+            userName = "John Doe",
+            isSelected = true,
+            onCheckedChange = {}
+        )
     }
 }

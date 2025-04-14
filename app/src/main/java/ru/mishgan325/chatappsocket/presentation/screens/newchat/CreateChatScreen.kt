@@ -1,20 +1,15 @@
-package ru.mishgan325.chatappsocket.presentation.screens
+package ru.mishgan325.chatappsocket.presentation.screens.newchat
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -31,88 +26,75 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.mishgan325.chatappsocket.models.User
-import ru.mishgan325.chatappsocket.presentation.components.SimpleUserListItem
+import ru.mishgan325.chatappsocket.presentation.components.SelectableUserListItem
 
 @Composable
 fun CreateChatScreen(
     users: List<User>
 ) {
     var chatName by remember { mutableStateOf("") }
-    val scrollState = rememberScrollState()
+    var selectedUserIds by remember { mutableStateOf(setOf<Long>()) }
 
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { }
+                onClick = {
+                    // TODO: handle chat creation using chatName and selectedUserIds
+                }
             ) {
-                Icon(Icons.Default.Check, contentDescription = "Create")
+                Icon(Icons.Default.Check, contentDescription = "Create Chat")
             }
         }
     ) { innerPadding ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .verticalScroll(scrollState)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(16.dp)
         ) {
-            // Поле ввода названия чата
             OutlinedTextField(
                 value = chatName,
                 onValueChange = { chatName = it },
                 label = { Text("Название чата") },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
             )
 
-            // Список пользователей с ограничением высоты
-            Card(
+            LazyColumn(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(bottom = 70.dp),
-                elevation = CardDefaults.cardElevation(4.dp)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                LazyColumn(
-                    contentPadding = PaddingValues(vertical = 8.dp)
-                ) {
-                    items(users) { user ->
-                        SimpleUserListItem(
-                            userName = user.username,
-                            modifier = Modifier.padding(horizontal = 8.dp),
-                        )
-                    }
+                items(users) { user ->
+                    val isSelected = selectedUserIds.contains(user.id)
+
+                    SelectableUserListItem(
+                        userName = user.username,
+                        isSelected = isSelected,
+                        onCheckedChange = { isChecked ->
+                            selectedUserIds = if (isChecked) {
+                                selectedUserIds + user.id
+                            } else {
+                                selectedUserIds - user.id
+                            }
+                        }
+                    )
                 }
             }
         }
     }
 }
 
-
-@Composable
 @Preview
+@Composable
 fun CreateChatScreenPreview() {
     MaterialTheme {
         CreateChatScreen(
-            users = listOf(
-                User(1, "User 1"),
-                User(2, "User 2"),
-                User(3, "User 3"),
-                User(2, "User 4"),
-                User(2, "User 5"),
-                User(2, "User 6"),
-                User(2, "User 7"),
-                User(2, "User 8"),
-                User(2, "User 9"),
-                User(2, "User 10"),
-                User(2, "User 11"),
-                User(2, "User 12"),
-                User(2, "User 13"),
-                User(2, "User 2"),
-                User(2, "User 2"),
-            )
+            users = List(12) { index -> User(index.toLong(), "User ${index + 1}") }
         )
     }
 }
