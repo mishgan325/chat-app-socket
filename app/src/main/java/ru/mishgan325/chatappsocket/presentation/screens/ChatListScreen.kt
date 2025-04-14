@@ -91,8 +91,8 @@ fun ChatListScreen(
                 onClick = {
                     navHostController.navigate("c")
                 },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = Color.White
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_new_chat))
             }
