@@ -9,9 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import ru.mishgan325.chatappsocket.data.api.model.RegisterResponse
 import ru.mishgan325.chatappsocket.domain.usecases.GetMyChatRoomsUseCase
-import ru.mishgan325.chatappsocket.domain.usecases.RegisterUseCase
 import ru.mishgan325.chatappsocket.dto.ChatRoomDto
 import ru.mishgan325.chatappsocket.utils.NetworkResult
 import javax.inject.Inject
