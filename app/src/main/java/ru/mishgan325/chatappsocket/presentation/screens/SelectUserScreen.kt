@@ -75,19 +75,3 @@ fun SelectUserScreen(
         }
     }
 }
-
-
-//@Composable
-//@Preview
-//fun SelectUserScreen() {
-//    MaterialTheme {
-//        SelectUserScreen(
-//            users = listOf(
-//                User(1, "User 1"),
-//                User(2, "User 2"),
-//                User(3, "User 3")
-//            ),
-//            onCreateClicked = { _, _ -> }
-//        )
-//    }
-//}
