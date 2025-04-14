@@ -15,12 +15,15 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -41,6 +44,7 @@ import ru.mishgan325.chatappsocket.presentation.navigation.Screen
 import ru.mishgan325.chatappsocket.utils.NetworkResult
 import ru.mishgan325.chatappsocket.viewmodels.CreateNewChatViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateNewChatScreen(
     navHostController: NavHostController,
@@ -48,7 +52,8 @@ fun CreateNewChatScreen(
 ) {
     val context = LocalContext.current
 
-    val state = createNewChatViewModel.getUsersResponse.observeAsState().value ?: NetworkResult.Loading()
+    val state =
+        createNewChatViewModel.getUsersResponse.observeAsState().value ?: NetworkResult.Loading()
 
     val users: List<User> = when (state) {
         is NetworkResult.Success -> state.data?.map { it.toUser() } ?: emptyList()
@@ -56,6 +61,7 @@ fun CreateNewChatScreen(
             navHostController.navigate(Screen.Chats.route)
             emptyList()
         }
+
         is NetworkResult.Loading -> emptyList()
     }
 
@@ -63,12 +69,22 @@ fun CreateNewChatScreen(
     val selectedUserIds by createNewChatViewModel.selectedUserIds.collectAsState()
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.create_new_chat)) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
                     createNewChatViewModel.createChat(
                         onInvalidSelection = { message ->
-                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()// Покажи Toast или Snackbar: "Выберите минимум двух пользователей и введите название чата"
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT)
+                                .show()// Покажи Toast или Snackbar: "Выберите минимум двух пользователей и введите название чата"
                         },
                         onSuccess = {
                             navHostController.navigate(Screen.Chats.route) {

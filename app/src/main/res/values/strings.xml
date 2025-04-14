@@ -14,4 +14,5 @@
     <string name="error_loading_chats">Ошибка при загрузке чатов</string>
     <string name="settings">Настройки</string>
     <string name="log_out">Выйти из аккаунта</string>
+    <string name="create_new_chat">Создать новый чат</string>
 </resources>
