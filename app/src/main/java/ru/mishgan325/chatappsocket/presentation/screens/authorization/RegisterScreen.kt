@@ -53,7 +53,9 @@ fun RegisterScreen(
 
     if (state is NetworkResult.Success) {
         LaunchedEffect(Unit) {
-            navHostController.navigate(Screen.Chats.route)
+            navHostController.navigate(Screen.Chats.route) {
+                popUpTo(Screen.Chats.route) { inclusive = true }
+            }
         }
     }
 

@@ -51,7 +51,7 @@ fun LoginScreen(
     LaunchedEffect(state) {
         if (state is NetworkResult.Success) {
             navHostController.navigate(Screen.Chats.route) {
-                popUpTo("login") { inclusive = true }
+                popUpTo(Screen.Chats.route) { inclusive = true }
             }
         }
     }
