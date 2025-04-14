@@ -12,4 +12,6 @@
     <string name="next">Далее</string>
     <string name="loading">Загрузка чатов...</string>
     <string name="error_loading_chats">Ошибка при загрузке чатов</string>
+    <string name="settings">Настройки</string>
+    <string name="log_out">Выйти из аккаунта</string>
 </resources>
