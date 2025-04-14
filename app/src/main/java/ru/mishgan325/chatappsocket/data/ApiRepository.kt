@@ -1,44 +1,30 @@
 package ru.mishgan325.chatappsocket.data
 
-import okhttp3.Response
 import ru.mishgan325.chatappsocket.data.api.RemoteDataSource
 import ru.mishgan325.chatappsocket.data.api.model.AuthRequest
 import ru.mishgan325.chatappsocket.data.api.model.AuthResponse
-import ru.mishgan325.chatappsocket.data.api.model.ChatRoomDtoResponse
+import ru.mishgan325.chatappsocket.data.api.model.CreateGroupChatRequest
+import ru.mishgan325.chatappsocket.data.api.model.CreatePrivateChatRequest
 import ru.mishgan325.chatappsocket.data.api.model.RegisterRequest
 import ru.mishgan325.chatappsocket.data.api.model.RegisterResponse
 import ru.mishgan325.chatappsocket.dto.ChatRoomDto
+import ru.mishgan325.chatappsocket.dto.UserDto
 import ru.mishgan325.chatappsocket.utils.BaseApiResponse
 import ru.mishgan325.chatappsocket.utils.NetworkResult
 import javax.inject.Inject
 
 
 class ApiRepository @Inject constructor(
-//    private val sessionManager: SessionManager
     private val remoteDataSource: RemoteDataSource
-): BaseApiResponse() {
-//    suspend fun login(username: String, password: String): Result<Unit> = try {
-//        val response = api.login(AuthRequest(username, password))
-//        if (response.isSuccessful) {
-//            response.body()?.let {
-//                sessionManager.saveAuthToken(it.token)
-//                Result.success(Unit)
-//            } ?: Result.failure(Exception("Empty response"))
-//        } else {
-//            Result.failure(Exception("Login failed: ${response.code()}"))
-//        }
-//    } catch (e: Exception) {
-//        Result.failure(e)
-//    }
+) : BaseApiResponse() {
 
-//    suspend fun register(email: String, username: String, password: String): Result<Unit> {
-//        // Аналогичная логика для регистрации
-//    }
     suspend fun login(username: String, password: String): NetworkResult<AuthResponse> {
         return safeApiCall { remoteDataSource.login(AuthRequest(username, password)) }
     }
 
-    suspend fun register(email: String, username: String, password: String): NetworkResult<RegisterResponse> {
+    suspend fun register(
+        email: String, username: String, password: String
+    ): NetworkResult<RegisterResponse> {
         return safeApiCall { remoteDataSource.register(RegisterRequest(email, username, password)) }
     }
 
@@ -46,13 +32,27 @@ class ApiRepository @Inject constructor(
         return safeApiCall { remoteDataSource.getMyChatRooms() }
     }
 
-//    suspend fun
-//
-//    suspend fun getAllPosts(): NetworkResult<List<PostResponse>> {
-//        return safeApiCall { remoteDataSource.getAllPosts() }
-//    }
+    suspend fun getUsers(): NetworkResult<List<UserDto>> {
+        return safeApiCall { remoteDataSource.getUsers() }
+    }
 
-//    suspend fun postPost(body: PostResponse): NetworkResult<PostResponse> {
-//        return safeApiCall { remoteDataSource.postPosts(body = body) }
-//    }
+    suspend fun createPrivateChat(name: String, userId: Long): NetworkResult<Unit> {
+        return safeApiCall {
+            remoteDataSource.createPrivateChat(
+                CreatePrivateChatRequest(
+                    name, userId
+                )
+            )
+        }
+    }
+
+    suspend fun createGroupChat(name: String, memberIds: List<Long>): NetworkResult<Unit> {
+        return safeApiCall {
+            remoteDataSource.createGroupChat(
+                CreateGroupChatRequest(
+                    name, memberIds
+                )
+            )
+        }
+    }
 }
