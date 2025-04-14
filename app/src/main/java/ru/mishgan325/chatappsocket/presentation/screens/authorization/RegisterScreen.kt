@@ -1,6 +1,5 @@
-package ru.mishgan325.chatappsocket.presentation.screens
+package ru.mishgan325.chatappsocket.presentation.screens.authorization
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -35,6 +34,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import ru.mishgan325.chatappsocket.R
+import ru.mishgan325.chatappsocket.presentation.navigation.Screen
 import ru.mishgan325.chatappsocket.utils.NetworkResult
 import ru.mishgan325.chatappsocket.viewmodels.RegisterViewModel
 
@@ -53,7 +53,7 @@ fun RegisterScreen(
 
     if (state is NetworkResult.Success) {
         LaunchedEffect(Unit) {
-            navHostController.navigate("chat_select")
+            navHostController.navigate(Screen.Chats.route)
         }
     }
 
@@ -100,9 +100,7 @@ fun RegisterScreen(
             leadingIcon = { Icon(painterResource(R.drawable.ic_login), null) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             visualTransformation = PasswordVisualTransformation(),
-            colors = TextFieldDefaults.colors(
-                // аналогичные цвета
-            ),
+            colors = TextFieldDefaults.colors(),
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -111,7 +109,6 @@ fun RegisterScreen(
         // Register Button
         Button(
             onClick = {
-                Log.d("REGISTER_SCREEN", email)
                 registerViewModel.register(email, username, password)
             },
             modifier = Modifier.fillMaxWidth(),

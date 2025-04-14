@@ -1,6 +1,5 @@
 package ru.mishgan325.chatappsocket.presentation
 
-//import ru.mishgan325.chatappsocket.presentation.screens.RegisterScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,10 +22,11 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import ru.mishgan325.chatappsocket.dto.TabBarItem
 import ru.mishgan325.chatappsocket.presentation.components.TabView
+import ru.mishgan325.chatappsocket.presentation.navigation.Screen
 import ru.mishgan325.chatappsocket.presentation.screens.ChatListScreen
-import ru.mishgan325.chatappsocket.presentation.screens.LoginScreen
-import ru.mishgan325.chatappsocket.presentation.screens.RegisterScreen
 import ru.mishgan325.chatappsocket.presentation.screens.SettingsScreen
+import ru.mishgan325.chatappsocket.presentation.screens.authorization.LoginScreen
+import ru.mishgan325.chatappsocket.presentation.screens.authorization.RegisterScreen
 import ru.mishgan325.chatappsocket.presentation.ui.theme.ChatappsocketTheme
 import ru.mishgan325.chatappsocket.utils.SessionManager
 import ru.mishgan325.chatappsocket.viewmodels.ChatListViewModel
@@ -47,9 +47,9 @@ class MainActivity : ComponentActivity() {
 
         val sessionManager = SessionManager(this)
         val startDestination = if (sessionManager.isLoggedIn()) {
-            "Chats"
+            Screen.Chats.route
         } else {
-            "login"
+            Screen.Login.route
         }
 
         setContent {
@@ -60,18 +60,18 @@ class MainActivity : ComponentActivity() {
                 )
 
                 val homeTab = TabBarItem(
-                    title = "Chats",
+                    title = Screen.Chats.route,
                     selectedIcon = Icons.Filled.Home,
                     unselectedIcon = Icons.Outlined.Home
                 )
                 val settingsTab = TabBarItem(
-                    title = "Settings",
+                    title = Screen.Settings.route,
                     selectedIcon = Icons.Filled.Settings,
                     unselectedIcon = Icons.Outlined.Settings
                 )
                 val tabBarItems = listOf(homeTab, settingsTab)
 
-                val bottomBarRoutes = listOf("Chats", "Settings")
+                val bottomBarRoutes = listOf(Screen.Chats.route, Screen.Settings.route)
 
                 Scaffold(
                     bottomBar = {
@@ -86,23 +86,23 @@ class MainActivity : ComponentActivity() {
                         startDestination = startDestination,
                         modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
                     ) {
-                        composable("Login") {
+                        composable(Screen.Login.route) {
                             LoginScreen(navController, loginViewModel)
                         }
 
-                        composable("register") {
+                        composable(Screen.Register.route) {
                             RegisterScreen(navController, registerViewModel)
                         }
 
-                        composable("Chats") {
+                        composable(Screen.Chats.route) {
                             ChatListScreen(navController, chatListViewModel)
                         }
 
-                        composable("Settings") {
+                        composable(Screen.Settings.route) {
                             SettingsScreen(navController)
                         }
 
-                        composable("select_users_new_chat") {
+                        composable(Screen.SelectUsersNewChat.route) {
                             Text(text = "New chat users select screen будет здесь")
                         }
                     }

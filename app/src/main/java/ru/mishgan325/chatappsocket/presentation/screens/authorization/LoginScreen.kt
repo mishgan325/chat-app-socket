@@ -1,6 +1,5 @@
-package ru.mishgan325.chatappsocket.presentation.screens
+package ru.mishgan325.chatappsocket.presentation.screens.authorization
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,8 +33,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import ru.mishgan325.chatappsocket.R
-import ru.mishgan325.chatappsocket.viewmodels.LoginViewModel
+import ru.mishgan325.chatappsocket.presentation.navigation.Screen
 import ru.mishgan325.chatappsocket.utils.NetworkResult
+import ru.mishgan325.chatappsocket.viewmodels.LoginViewModel
 
 @Composable
 fun LoginScreen(
@@ -111,7 +111,7 @@ fun LoginScreen(
             text = stringResource(R.string.sign_up),
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
-                .clickable(onClick = { navHostController.navigate("register") })
+                .clickable(onClick = { navHostController.navigate(Screen.Chats.route) })
                 .padding(12.dp),
             style = MaterialTheme.typography.bodyMedium
         )
