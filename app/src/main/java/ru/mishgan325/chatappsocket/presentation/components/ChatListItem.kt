@@ -24,7 +24,7 @@ fun ChatListItem(
             .fillMaxWidth()
             .padding(horizontal = 8.dp),
         colors = CardDefaults.cardColors(
-//            containerColor = MaterialTheme.colorScheme.su,
+            containerColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.onSurface
         ),
         shape = MaterialTheme.shapes.medium,
