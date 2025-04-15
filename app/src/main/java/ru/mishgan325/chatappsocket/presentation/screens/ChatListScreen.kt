@@ -131,7 +131,9 @@ fun ChatListScreen(
                                 modifier = Modifier
                                     .padding(vertical = 4.dp)
                                     .clickable {
-                                        // TODO: переход в чат
+                                        navHostController.navigate(
+                                            Screen.Chat.withArgs(chat.id.toString(), chat.name)
+                                        )
                                     }
                             )
                         }
