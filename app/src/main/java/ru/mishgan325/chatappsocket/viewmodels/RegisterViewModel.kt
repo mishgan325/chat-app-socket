@@ -11,12 +11,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ru.mishgan325.chatappsocket.data.api.model.RegisterResponse
 import ru.mishgan325.chatappsocket.domain.usecases.RegisterUseCase
+import ru.mishgan325.chatappsocket.domain.usecases.WhoamiUseCase
 import ru.mishgan325.chatappsocket.utils.NetworkResult
+import ru.mishgan325.chatappsocket.utils.SessionManager
 import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val registerUseCase: RegisterUseCase
+    private val registerUseCase: RegisterUseCase,
+    private val whoamiUseCase: WhoamiUseCase,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     private val _authResponse = MutableLiveData<NetworkResult<RegisterResponse>>()
@@ -48,6 +52,39 @@ class RegisterViewModel @Inject constructor(
                     is NetworkResult.Success -> {
                         Log.d(TAG, "SUCCESS: ${result.data?.token}")
                         _authState.value = NetworkResult.Success(Unit)
+                        result.data?.let { data ->
+                            sessionManager.saveAuthToken(data.token)
+                            Log.d(TAG, "SUCCESS: ${result.data?.token}")
+                        }
+                        saveUserData()
+                    }
+                }
+            }
+        }
+    }
+
+    fun saveUserData() {
+        viewModelScope.launch {
+            val result = whoamiUseCase.invoke()
+
+            when (result) {
+                is NetworkResult.Error -> {
+                    Log.d(TAG, "Error: ${result.message}")
+                    _authState.value = NetworkResult.Error(null, result.message)
+                }
+
+                is NetworkResult.Loading -> {
+                    Log.d(TAG, "Auth is loading")
+                    _authState.value = NetworkResult.Loading()
+                }
+
+                is NetworkResult.Success -> {
+                    Log.d(TAG, "SUCCESS: ${result.data?.id} ${result.data?.username}")
+                    _authState.value = NetworkResult.Success(Unit)
+
+                    result.data?.let { data ->
+                        sessionManager.saveUserId(result.data?.id)
+                        sessionManager.saveUsername(result.data?.username.toString())
                     }
                 }
             }
