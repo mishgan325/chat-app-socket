@@ -39,10 +39,10 @@ interface ApiService {
     suspend fun createGroupChat(@Body request: CreateGroupChatRequest): Response<Unit>
 
     @GET("api/chat-messages/{chatRoomId}")
-    suspend fun getChatMessagesWithPagination(
+    suspend fun getChatMessages(
         @Path("chatRoomId") chatRoomId: Long,
         @Query("page") page: Int,
         @Query("size") size: Int,
         @Query("sort") sort: String
-    ): Response<List<ChatMessageDto>>
+    ): Response<ChatMessagesResponse>
 }

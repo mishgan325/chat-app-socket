@@ -23,10 +23,10 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
     suspend fun createGroupChat(createGroupChatRequest: CreateGroupChatRequest) =
         apiService.createGroupChat(createGroupChatRequest)
 
-    suspend fun getChatMessagesWithPagination(
+    suspend fun getChatMessages(
         chatRoomId: Long,
         page: Int,
         size: Int,
         sort: String
-    ) = apiService.getChatMessagesWithPagination(chatRoomId, page, size, sort)
+    ) = apiService.getChatMessages(chatRoomId, page, size, sort)
 }
