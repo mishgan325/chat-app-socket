@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.LoadState
 import ru.mishgan325.chatappsocket.data.api.model.ChatMessagesResponse
+import ru.mishgan325.chatappsocket.presentation.components.LoadingItem
 import ru.mishgan325.chatappsocket.viewmodels.ChatViewModel
 
 data class ChatMessage(
@@ -116,33 +117,3 @@ fun ChatScreen(
         }
     }
 }
-
-
-@Composable
-fun LoadingItem() {
-    CircularProgressIndicator(modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp), color = Color.Gray)
-}
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun ChatScreenPreview() {
-//    val messages = listOf(
-//        ChatMessage("Привет! Как дела?", false),
-//        ChatMessage("Привет! Всё хорошо, а у тебя?", true),
-//        ChatMessage("Тоже отлично, спасибо!", false)
-//    )
-//
-//    MaterialTheme(
-//        colorScheme = lightColorScheme()
-//    ) {
-//        ChatScreen(
-//            messages = messages,
-//            onSendMessage = {},
-//            onAttachFile = {},
-//            chatTitle = "Тестовый чат"
-//        )
-//    }
-//}
