@@ -7,9 +7,4 @@ data class Message(
     val fileUrl: String,
     val timestamp: String,
     val isMine: Boolean
-) {
-    data class Sender(
-        val id: Long,
-        val username: String
-    )
-}
+)
