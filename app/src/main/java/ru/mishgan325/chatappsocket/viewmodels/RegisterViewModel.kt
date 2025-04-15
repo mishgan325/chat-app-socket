@@ -83,8 +83,8 @@ class RegisterViewModel @Inject constructor(
                     _authState.value = NetworkResult.Success(Unit)
 
                     result.data?.let { data ->
-                        sessionManager.saveUserId(result.data?.id)
-                        sessionManager.saveUsername(result.data?.username.toString())
+                        sessionManager.saveUserId(result.data.id)
+                        sessionManager.saveUsername(result.data.username.toString())
                     }
                 }
             }
