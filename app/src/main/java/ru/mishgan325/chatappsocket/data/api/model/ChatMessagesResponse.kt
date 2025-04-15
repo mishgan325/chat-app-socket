@@ -14,32 +14,4 @@ data class ChatMessagesResponse(
     @SerializedName("sort") val sort: SortX,
     @SerializedName("totalElements") val totalElements: Int,
     @SerializedName("totalPages") val totalPages: Int
-) {
-    data class Content(
-        @SerializedName("content") val content: String,
-        @SerializedName("fileUrl") val fileUrl: String,
-        @SerializedName("id") val id: Long,
-        @SerializedName("sender") val sender: Sender,
-        @SerializedName("timestamp") val timestamp: String
-    )
-
-    data class Pageable(
-        @SerializedName("offset") val offset: Int,
-        @SerializedName("pageNumber") val pageNumber: Int,
-        @SerializedName("pageSize") val pageSize: Int,
-        @SerializedName("paged") val paged: Boolean,
-        @SerializedName("sort") val sort: SortX,
-        @SerializedName("unpaged") val unpaged: Boolean
-    )
-
-    data class Sender(
-        @SerializedName("id") val id: Long,
-        @SerializedName("username") val username: String
-    )
-
-    data class SortX(
-        @SerializedName("empty") val empty: Boolean,
-        @SerializedName("sorted") val sorted: Boolean,
-        @SerializedName("unsorted") val unsorted: Boolean
-    )
-}
+)
