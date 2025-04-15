@@ -18,7 +18,7 @@ data class ChatMessagesResponse(
     data class Content(
         @SerializedName("content") val content: String,
         @SerializedName("fileUrl") val fileUrl: String,
-        @SerializedName("id") val id: Int,
+        @SerializedName("id") val id: Long,
         @SerializedName("sender") val sender: Sender,
         @SerializedName("timestamp") val timestamp: String
     )
@@ -33,7 +33,7 @@ data class ChatMessagesResponse(
     )
 
     data class Sender(
-        @SerializedName("id") val id: Int,
+        @SerializedName("id") val id: Long,
         @SerializedName("username") val username: String
     )
 
