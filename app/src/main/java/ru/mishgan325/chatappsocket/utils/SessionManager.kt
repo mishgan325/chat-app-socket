@@ -3,6 +3,7 @@ package ru.mishgan325.chatappsocket.utils
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 
@@ -19,15 +20,15 @@ class SessionManager(context: Context) {
 
     // Сохранение данных
     fun saveAuthToken(token: String) {
-        prefs.edit().putString("jwt_token", token).apply()
+        prefs.edit() { putString("jwt_token", token) }
     }
 
     fun saveUsername(username: String) {
-        prefs.edit().putString("username", username).apply()
+        prefs.edit() { putString("username", username) }
     }
 
 
-    fun saveUserId(id: Long) = prefs.edit().putLong("user_id", id).apply()
+    fun saveUserId(id: Long) = prefs.edit() { putLong("user_id", id) }
 
     // Получение данных
     fun getAuthToken(): String? = prefs.getString("jwt_token", null)
@@ -42,7 +43,7 @@ class SessionManager(context: Context) {
     }
 
     fun logout() {
-        prefs.edit().remove("jwt_token").apply()
+        prefs.edit() { remove("jwt_token") }
     }
 
 }
