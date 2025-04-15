@@ -16,14 +16,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
 import ru.mishgan325.chatappsocket.dto.TabBarItem
 import ru.mishgan325.chatappsocket.presentation.components.TabView
 import ru.mishgan325.chatappsocket.presentation.navigation.Screen
 import ru.mishgan325.chatappsocket.presentation.screens.ChatListScreen
+import ru.mishgan325.chatappsocket.presentation.screens.ChatScreen
 import ru.mishgan325.chatappsocket.presentation.screens.CreateNewChatScreen
 import ru.mishgan325.chatappsocket.presentation.screens.SettingsScreen
 import ru.mishgan325.chatappsocket.presentation.screens.authorization.LoginScreen
@@ -31,6 +34,7 @@ import ru.mishgan325.chatappsocket.presentation.screens.authorization.RegisterSc
 import ru.mishgan325.chatappsocket.presentation.ui.theme.ChatappsocketTheme
 import ru.mishgan325.chatappsocket.utils.SessionManager
 import ru.mishgan325.chatappsocket.viewmodels.ChatListViewModel
+import ru.mishgan325.chatappsocket.viewmodels.ChatViewModel
 import ru.mishgan325.chatappsocket.viewmodels.CreateNewChatViewModel
 import ru.mishgan325.chatappsocket.viewmodels.LoginViewModel
 import ru.mishgan325.chatappsocket.viewmodels.RegisterViewModel
@@ -42,6 +46,7 @@ class MainActivity : ComponentActivity() {
     private val registerViewModel: RegisterViewModel by viewModels()
     private val chatListViewModel: ChatListViewModel by viewModels()
     private val createNewChatViewModel: CreateNewChatViewModel by viewModels()
+    private val chatViewModel: ChatViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,6 +113,23 @@ class MainActivity : ComponentActivity() {
                         composable(Screen.CreateNewChat.route) {
                             CreateNewChatScreen(navController, createNewChatViewModel)
                         }
+
+                        composable(
+                            route = Screen.Chat.route,
+                            arguments = listOf(
+                                navArgument("chatRoomId") { type = NavType.StringType },
+                                navArgument("chatName") { type = NavType.StringType }
+                            )
+                        ) { backStackEntry ->
+                            val chatRoomId = backStackEntry.arguments?.getString("chatRoomId")?.toLongOrNull() ?: 0L
+                            val chatName = backStackEntry.arguments?.getString("chatName") ?: ""
+                            ChatScreen(
+                                chatRoomId = chatRoomId,
+                                chatName = chatName,
+                                viewModel = chatViewModel
+                            )
+                        }
+
                     }
                 }
             }
