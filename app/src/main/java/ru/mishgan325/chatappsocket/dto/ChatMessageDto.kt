@@ -8,9 +8,4 @@ data class ChatMessageDto(
     @SerializedName("content") val content: String,
     @SerializedName("fileUrl") val fileUrl: String,
     @SerializedName("timestamp") val timestamp: String
-) {
-    data class SenderDto(
-        @SerializedName("id") val id: Long,
-        @SerializedName("username") val username: String
-    )
-}
+)
