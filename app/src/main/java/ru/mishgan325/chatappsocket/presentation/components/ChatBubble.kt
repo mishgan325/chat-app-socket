@@ -1,9 +1,13 @@
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,6 +22,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import ru.mishgan325.chatappsocket.models.Message
@@ -72,10 +77,10 @@ fun ChatBubble(message: Message) {
 
                     // Превью изображения с кликом
                     if (message.fileUrl.isNotBlank() &&
-                        (message.fileUrl.endsWith(".jpg", true) ||
-                                message.fileUrl.endsWith(".png", true) ||
-                                message.fileUrl.endsWith(".jpeg", true) ||
-                                message.fileUrl.endsWith(".gif", true))
+                        (message.fileUrl.contains(".jpg", true) ||
+                                message.fileUrl.contains(".png", true) ||
+                                message.fileUrl.contains(".jpeg", true) ||
+                                message.fileUrl.contains(".gif", true))
                     ) {
                         Spacer(modifier = Modifier.height(8.dp))
                         AsyncImage(
@@ -93,22 +98,52 @@ fun ChatBubble(message: Message) {
 
                     // Кнопка "Скачать файл"
                     if (message.fileUrl.isNotBlank()) {
+                        val fileName = Uri.parse(message.fileUrl)
+                            .lastPathSegment
+                            ?.substringAfter("-")
+                            ?.substringBefore("?")
+                            ?: "Файл"
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "📥 Скачать файл",
-                            color = MaterialTheme.colorScheme.primary,
-                            style = TextStyle(
-                                fontSize = 14.sp,
-                                textDecoration = TextDecoration.Underline
-                            ),
-                            modifier = Modifier.clickable {
-                                val intent = Intent(Intent.ACTION_VIEW).apply {
-                                    data = Uri.parse(message.fileUrl)
+
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                            tonalElevation = 2.dp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                                        data = Uri.parse(message.fileUrl)
+                                    }
+                                    context.startActivity(intent)
                                 }
-                                context.startActivity(intent)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .padding(12.dp)
+                                    .fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.AttachFile,
+                                    contentDescription = "File",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                Text(
+                                    text = fileName,
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        color = MaterialTheme.colorScheme.primary
+                                    ),
+                                    maxLines = 1
+                                )
                             }
-                        )
+                        }
                     }
+
 
                     Spacer(modifier = Modifier.height(6.dp))
 
@@ -126,7 +161,10 @@ fun ChatBubble(message: Message) {
     }
 
     if (isImagePreviewOpen) {
-        Dialog(onDismissRequest = { isImagePreviewOpen = false }) {
+        Dialog(
+            onDismissRequest = { isImagePreviewOpen = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
             // Зум и пан
             var scale by remember { mutableStateOf(1f) }
             var offsetX by remember { mutableStateOf(0f) }
@@ -135,6 +173,7 @@ fun ChatBubble(message: Message) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.6f))
                     .pointerInput(Unit) {
                         detectTransformGestures { _, pan, zoom, _ ->
                             scale = (scale * zoom).coerceIn(1f, 5f)
@@ -142,29 +181,23 @@ fun ChatBubble(message: Message) {
                             offsetY += pan.y
                         }
                     }
-                    .clickable { isImagePreviewOpen = false }, // Закрытие по нажатию
+                    .clickable { isImagePreviewOpen = false },
                 contentAlignment = Alignment.Center
             ) {
-                // Прозрачный фон
-                Surface(
-                    color = Color.Black.copy(alpha = 0.8f), // Можно сделать 0.6f, если хочешь "размытый" эффект
-                    tonalElevation = 0.dp,
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    AsyncImage(
-                        model = message.fileUrl,
-                        contentDescription = "Full Image",
-                        modifier = Modifier
-                            .graphicsLayer(
-                                scaleX = scale,
-                                scaleY = scale,
-                                translationX = offsetX,
-                                translationY = offsetY
-                            )
-                            .padding(16.dp)
-                    )
-                }
+                AsyncImage(
+                    model = message.fileUrl,
+                    contentDescription = "Full Image",
+                    modifier = Modifier
+                        .graphicsLayer(
+                            scaleX = scale,
+                            scaleY = scale,
+                            translationX = offsetX,
+                            translationY = offsetY
+                        )
+                        .padding(16.dp)
+                )
             }
         }
     }
+
 }
