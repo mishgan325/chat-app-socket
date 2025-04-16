@@ -8,11 +8,15 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 
 class SessionManager(context: Context) {
+    private val masterKey: MasterKey = MasterKey.Builder(context)
+        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+        .build()
+
     private val prefs: SharedPreferences by lazy {
         EncryptedSharedPreferences.create(
             context,
             "secure_prefs",
-            MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build(),
+            masterKey,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
@@ -20,15 +24,14 @@ class SessionManager(context: Context) {
 
     // Сохранение данных
     fun saveAuthToken(token: String) {
-        prefs.edit() { putString("jwt_token", token) }
+        prefs.edit { putString("jwt_token", token) }
     }
 
     fun saveUsername(username: String) {
-        prefs.edit() { putString("username", username) }
+        prefs.edit { putString("username", username) }
     }
 
-
-    fun saveUserId(id: Long) = prefs.edit() { putLong("user_id", id) }
+    fun saveUserId(id: Long) = prefs.edit { putLong("user_id", id) }
 
     // Получение данных
     fun getAuthToken(): String? = prefs.getString("jwt_token", null)
@@ -43,7 +46,6 @@ class SessionManager(context: Context) {
     }
 
     fun logout() {
-        prefs.edit() { remove("jwt_token") }
+        prefs.edit { remove("jwt_token") }
     }
-
 }
