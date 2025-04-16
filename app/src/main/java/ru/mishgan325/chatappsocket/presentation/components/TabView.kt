@@ -25,7 +25,7 @@ fun TabView(tabBarItems: List<TabBarItem>, navController: NavController) {
                 onClick = {
                     if (selectedTabIndex != index) {
                         selectedTabIndex = index
-                        navController.navigate(tabBarItem.title) {
+                        navController.navigate(tabBarItem.route) {
                             popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
                             }
@@ -39,11 +39,10 @@ fun TabView(tabBarItems: List<TabBarItem>, navController: NavController) {
                         isSelected = selectedTabIndex == index,
                         selectedIcon = tabBarItem.selectedIcon,
                         unselectedIcon = tabBarItem.unselectedIcon,
-                        title = tabBarItem.title,
-                        badgeAmount = tabBarItem.badgeAmount
+                        title = tabBarItem.route,
                     )
                 },
-                label = {Text(tabBarItem.title)})
+                label = {Text(tabBarItem.route)})
         }
     }
 }

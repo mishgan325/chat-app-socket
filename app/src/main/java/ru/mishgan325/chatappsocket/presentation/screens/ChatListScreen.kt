@@ -1,5 +1,7 @@
 package ru.mishgan325.chatappsocket.presentation.screens
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,6 +27,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -45,6 +48,15 @@ fun ChatListScreen(
     chatListViewModel: ChatListViewModel,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+
+    // Обработка кнопки "Назад" для выхода из приложения
+    BackHandler {
+        // Завершаем приложение при нажатии назад
+        (context as Activity).finish()
+    }
+
+
     val lifecycleOwner = LocalLifecycleOwner.current
 
     DisposableEffect(lifecycleOwner) {
