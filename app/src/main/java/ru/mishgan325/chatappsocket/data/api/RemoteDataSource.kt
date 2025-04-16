@@ -29,4 +29,7 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
         size: Int,
         sort: String
     ) = apiService.getChatMessages(chatRoomId, page, size, sort)
+
+    suspend fun getFileLink(fileUrl: String) = apiService.getFileLink(fileUrl)
+
 }
