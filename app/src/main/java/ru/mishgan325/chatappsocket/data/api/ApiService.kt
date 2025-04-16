@@ -6,8 +6,15 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
-import ru.mishgan325.chatappsocket.data.api.model.*
-import ru.mishgan325.chatappsocket.dto.ChatMessageDto
+import ru.mishgan325.chatappsocket.data.api.model.AuthRequest
+import ru.mishgan325.chatappsocket.data.api.model.AuthResponse
+import ru.mishgan325.chatappsocket.data.api.model.ChatMessagesResponse
+import ru.mishgan325.chatappsocket.data.api.model.CreateGroupChatRequest
+import ru.mishgan325.chatappsocket.data.api.model.CreatePrivateChatRequest
+import ru.mishgan325.chatappsocket.data.api.model.GetFileLinkResponse
+import ru.mishgan325.chatappsocket.data.api.model.RegisterRequest
+import ru.mishgan325.chatappsocket.data.api.model.RegisterResponse
+import ru.mishgan325.chatappsocket.data.api.model.WhoamiResponse
 import ru.mishgan325.chatappsocket.dto.ChatRoomDto
 import ru.mishgan325.chatappsocket.dto.UserDto
 
@@ -27,11 +34,6 @@ interface ApiService {
     @GET("api/users")
     suspend fun getUsers(): Response<List<UserDto>>
 
-    @GET("api/chat-messages/{chat_id}")
-    suspend fun getChatMessages(
-        @Path("chat_id") chatId: Long
-    ): Response<List<ChatMessageDto>>
-
     @POST("api/chat-rooms/private")
     suspend fun createPrivateChat(@Body request: CreatePrivateChatRequest): Response<Unit>
 
@@ -45,4 +47,9 @@ interface ApiService {
         @Query("size") size: Int,
         @Query("sort") sort: String
     ): Response<ChatMessagesResponse>
+
+    @GET("api/files/{fileUrl}")
+    suspend fun getFileLink(
+        @Path("fileUrl") fileUrl: String
+    ): Response<GetFileLinkResponse>
 }
