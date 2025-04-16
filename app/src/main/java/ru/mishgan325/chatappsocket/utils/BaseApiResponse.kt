@@ -11,7 +11,7 @@ abstract class BaseApiResponse {
                 val body = response.body()
                 body?.let {
                     return NetworkResult.Success(body)
-                } ?: return errorMessage("Body is emptry")
+                } ?: return errorMessage("Body is empty")
             } else {
                 return errorMessage("${response.code()} ${response.message()}")
             }
