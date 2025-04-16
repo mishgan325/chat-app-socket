@@ -4,5 +4,5 @@ import com.google.gson.annotations.SerializedName
 
 data class CreatePrivateChatRequest(
     @SerializedName("name") val name: String,
-    @SerializedName("user_id") val user_id: Long
+    @SerializedName("user_id") val userId: Long
 )
