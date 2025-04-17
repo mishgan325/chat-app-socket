@@ -4,16 +4,27 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -31,6 +42,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,7 +56,7 @@ import ru.mishgan325.chatappsocket.presentation.navigation.Screen
 import ru.mishgan325.chatappsocket.utils.NetworkResult
 import ru.mishgan325.chatappsocket.viewmodels.CreateNewChatViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun CreateNewChatScreen(
     navHostController: NavHostController,
@@ -55,7 +67,7 @@ fun CreateNewChatScreen(
     val state =
         createNewChatViewModel.getUsersResponse.observeAsState().value ?: NetworkResult.Loading()
 
-    val users: List<User> = when (state) {
+    val allUsers: List<User> = when (state) {
         is NetworkResult.Success -> state.data?.map { it.toUser() } ?: emptyList()
         is NetworkResult.Error -> {
             navHostController.navigate(Screen.Chats.route)
@@ -65,8 +77,12 @@ fun CreateNewChatScreen(
         is NetworkResult.Loading -> emptyList()
     }
 
+    val searchQuery by createNewChatViewModel.searchQuery.collectAsState()
+    val searchResults by createNewChatViewModel.searchResults.collectAsState()
     val chatName by createNewChatViewModel.chatName.collectAsState()
     val selectedUserIds by createNewChatViewModel.selectedUserIds.collectAsState()
+
+    val usersToDisplay = if (searchQuery.isNotBlank()) searchResults else allUsers
 
     Scaffold(
         topBar = {
@@ -83,8 +99,7 @@ fun CreateNewChatScreen(
                 onClick = {
                     createNewChatViewModel.createChat(
                         onInvalidSelection = { message ->
-                            Toast.makeText(context, message, Toast.LENGTH_SHORT)
-                                .show()// Покажи Toast или Snackbar: "Выберите минимум двух пользователей и введите название чата"
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                         },
                         onSuccess = {
                             navHostController.navigate(Screen.Chats.route) {
@@ -105,19 +120,67 @@ fun CreateNewChatScreen(
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
+            // 💬 Поле ввода названия чата
             OutlinedTextField(
                 value = chatName,
                 onValueChange = createNewChatViewModel::onChatNameChange,
                 label = { Text("Название чата") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp),
+                    .padding(bottom = 8.dp),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
             )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 120.dp) // ограничиваем высоту
+                    .verticalScroll(rememberScrollState()) // добавляем скролл при необходимости
+                    .padding(bottom = 8.dp)
+            ) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ){
+                    selectedUserIds.forEach { userId ->
+                        val user = allUsers.find { it.id == userId }
+                        if (user != null) {
+                            AssistChip(
+                                onClick = { createNewChatViewModel.onUserCheckedChange(userId, false) },
+                                label = { Text(user.username) },
+                                trailingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "Remove"
+                                    )
+                                },
+                                shape = RoundedCornerShape(16.dp),
+                                colors = AssistChipDefaults.assistChipColors(),
+                            )
+                        }
+                    }
+                }
+            }
+
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = createNewChatViewModel::onSearchQueryChanged,
+                label = { Text("Поиск пользователей") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                singleLine = true,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search",
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+            )
+
             when (state) {
                 is NetworkResult.Loading -> {
-                    // Плавная анимация может быть добавлена через AnimatedVisibility, но тут просто красиво по центру:
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -136,9 +199,10 @@ fun CreateNewChatScreen(
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(bottom = 64.dp)
                     ) {
-                        items(users) { user ->
+                        items(usersToDisplay) { user ->
                             val isSelected = selectedUserIds.contains(user.id)
 
                             SelectableUserListItem(
@@ -162,7 +226,6 @@ fun CreateNewChatScreen(
                     )
                 }
             }
-
         }
     }
 }

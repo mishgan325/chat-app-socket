@@ -13,7 +13,7 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
 
     suspend fun whoami() = apiService.whoami()
 
-    suspend fun getUsers() = apiService.getUsers()
+    suspend fun getUsers(username: String? = null) = apiService.getUsers(username)
 
     suspend fun getMyChatRooms() = apiService.getMyChatRooms()
 

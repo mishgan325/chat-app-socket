@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import ru.mishgan325.chatappsocket.domain.usecases.CreateGroupChatUseCase
 import ru.mishgan325.chatappsocket.domain.usecases.CreatePrivateChatUseCase
 import ru.mishgan325.chatappsocket.domain.usecases.GetUsersUseCase
-import ru.mishgan325.chatappsocket.dto.ChatRoomDto
+import ru.mishgan325.chatappsocket.domain.usecases.SearchUsersUseCase
 import ru.mishgan325.chatappsocket.dto.UserDto
 import ru.mishgan325.chatappsocket.models.User
 import ru.mishgan325.chatappsocket.utils.NetworkResult
@@ -22,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CreateNewChatViewModel @Inject constructor(
     private val getUsersUseCase: GetUsersUseCase,
+    private val searchUsersUseChatViewModel: SearchUsersUseCase,
     private val createPrivateChatUseCase: CreatePrivateChatUseCase,
     private val createGroupChatUseCase: CreateGroupChatUseCase
 ) : ViewModel() {
@@ -46,6 +47,13 @@ class CreateNewChatViewModel @Inject constructor(
 
     private val _createChatState = MutableStateFlow<NetworkResult<Unit>>(NetworkResult.Loading())
     val createChatState: StateFlow<NetworkResult<Unit>> = _createChatState
+
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
+    private val _searchResults = MutableStateFlow<List<User>>(emptyList())
+    val searchResults: StateFlow<List<User>> = _searchResults.asStateFlow()
+
 
     private val TAG = "CreateNewChatViewModel"
 
@@ -171,4 +179,37 @@ class CreateNewChatViewModel @Inject constructor(
             }
         }
     }
+
+    fun onSearchQueryChanged(query: String) {
+        _searchQuery.value = query
+        searchUsers(query)
+    }
+
+    private fun searchUsers(query: String) {
+        if (query.isBlank()) {
+            _searchResults.value = emptyList()
+            return
+        }
+
+        viewModelScope.launch {
+            val result = searchUsersUseChatViewModel.invoke(query)
+            when (result) {
+                is NetworkResult.Success -> {
+                    _searchResults.value = result.data?.map { dto ->
+                        User(dto.id, dto.username)
+                    } ?: emptyList()
+                }
+
+                is NetworkResult.Error -> {
+                    Log.d(TAG, "Search error: ${result.message}")
+                    _searchResults.value = emptyList()
+                }
+
+                is NetworkResult.Loading -> {
+                    // optionally show loading
+                }
+            }
+        }
+    }
+
 }

@@ -32,7 +32,7 @@ interface ApiService {
     suspend fun getMyChatRooms(): Response<List<ChatRoomDto>>
 
     @GET("api/users")
-    suspend fun getUsers(): Response<List<UserDto>>
+    suspend fun getUsers(@Query("username") username: String? = null): Response<List<UserDto>>
 
     @POST("api/chat-rooms/private")
     suspend fun createPrivateChat(@Body request: CreatePrivateChatRequest): Response<Unit>

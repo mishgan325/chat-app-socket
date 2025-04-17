@@ -39,8 +39,8 @@ class ApiRepository @Inject constructor(
         return safeApiCall { remoteDataSource.getMyChatRooms() }
     }
 
-    suspend fun getUsers(): NetworkResult<List<UserDto>> {
-        return safeApiCall { remoteDataSource.getUsers() }
+    suspend fun getUsers(username: String? = null): NetworkResult<List<UserDto>> {
+        return safeApiCall { remoteDataSource.getUsers(username) }
     }
 
     suspend fun createPrivateChat(name: String, userId: Long): NetworkResult<Unit> {
