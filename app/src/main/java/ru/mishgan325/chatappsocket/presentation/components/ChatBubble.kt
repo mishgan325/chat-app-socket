@@ -1,5 +1,8 @@
 import android.content.Intent
 import android.net.Uri
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,13 +21,17 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.OutputStream
+import java.net.URL
 import ru.mishgan325.chatappsocket.models.Message
 
 @Composable
@@ -39,6 +46,31 @@ fun ChatBubble(message: Message) {
     val context = LocalContext.current
 
     var isImagePreviewOpen by remember { mutableStateOf(false) }
+    var pendingDownloadUrl by remember { mutableStateOf<String?>(null) }
+
+    val coroutineScope = rememberCoroutineScope()
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/octet-stream")
+    ) { uri: Uri? ->
+        if (uri != null && pendingDownloadUrl != null) {
+            coroutineScope.launch {
+                try {
+                    withContext(Dispatchers.IO) {
+                        val input = URL(pendingDownloadUrl).openStream()
+                        val output: OutputStream? = context.contentResolver.openOutputStream(uri)
+                        input.use { inputStream ->
+                            output?.use { outputStream ->
+                                inputStream.copyTo(outputStream)
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace() // или покажи snackbar/Toast
+                }
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -113,10 +145,8 @@ fun ChatBubble(message: Message) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                                        data = Uri.parse(message.fileUrl)
-                                    }
-                                    context.startActivity(intent)
+                                    pendingDownloadUrl = message.fileUrl
+                                    launcher.launch(fileName)
                                 }
                         ) {
                             Row(
@@ -143,7 +173,6 @@ fun ChatBubble(message: Message) {
                             }
                         }
                     }
-
 
                     Spacer(modifier = Modifier.height(6.dp))
 
