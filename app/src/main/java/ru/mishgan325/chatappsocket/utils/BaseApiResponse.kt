@@ -5,18 +5,22 @@ import retrofit2.Response
 abstract class BaseApiResponse {
 
     suspend fun <T> safeApiCall(api: suspend () -> Response<T>): NetworkResult<T> {
-        try {
+        return try {
             val response = api()
             if (response.isSuccessful) {
                 val body = response.body()
-                body?.let {
-                    return NetworkResult.Success(body)
-                } ?: return errorMessage("Body is empty")
+                if (body != null) {
+                    NetworkResult.Success(body)
+                } else {
+                    // Если успешный ответ и тело null — значит, это 204 No Content (или аналог)
+                    @Suppress("UNCHECKED_CAST")
+                    NetworkResult.Success(Unit as T) // Безопасно, если T == Unit
+                }
             } else {
-                return errorMessage("${response.code()} ${response.message()}")
+                errorMessage("${response.code()} ${response.message()}")
             }
         } catch (e: Exception) {
-            return errorMessage(e.message.toString())
+            errorMessage(e.message.toString())
         }
     }
 
