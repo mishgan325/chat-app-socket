@@ -2,6 +2,7 @@ package ru.mishgan325.chatappsocket.presentation.screens
 
 import ChatBubble
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,11 +23,6 @@ import ru.mishgan325.chatappsocket.data.api.model.ChatMessagesResponse
 import ru.mishgan325.chatappsocket.presentation.components.LoadingItem
 import ru.mishgan325.chatappsocket.viewmodels.ChatViewModel
 
-data class ChatMessage(
-    val text: String,
-    val isUser: Boolean
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
@@ -34,7 +30,12 @@ fun ChatScreen(
     chatName: String,
     viewModel: ChatViewModel,
 ) {
-    val chatMessages = viewModel.getChatMessages(chatRoomId).collectAsLazyPagingItems()
+    // загружаем сообщения один раз
+    LaunchedEffect(chatRoomId) {
+        viewModel.loadChatMessages(chatRoomId)
+    }
+
+    val chatMessages = viewModel.chatMessages.collectAsLazyPagingItems()
     var currentInput by remember { mutableStateOf("") }
 
     Scaffold(
@@ -68,8 +69,7 @@ fun ChatScreen(
                 IconButton(
                     onClick = {
                         if (currentInput.isNotBlank()) {
-//                            onSendMessage(currentInput)
-
+                            // TODO: отправка сообщения
                             currentInput = ""
                         }
                     }
@@ -87,7 +87,15 @@ fun ChatScreen(
         ) {
             items(chatMessages.itemCount) { index ->
                 chatMessages[index]?.let { message ->
-                    ChatBubble(message = message)
+                    ChatBubble(
+                        message = message,
+                        onEditMessage = { messageId, newContent ->
+                            viewModel.editMessage(messageId, newContent)
+                        },
+                        onDeleteMessage = { messageId ->
+                            viewModel.deleteMessage(messageId)
+                        }
+                    )
                 }
             }
 
@@ -95,11 +103,9 @@ fun ChatScreen(
                 is LoadState.Loading -> {
                     item { LoadingItem() }
                 }
-
                 is LoadState.Error -> {
                     item { Text("Ошибка при подгрузке") }
                 }
-
                 else -> Unit
             }
 
@@ -107,11 +113,9 @@ fun ChatScreen(
                 is LoadState.Loading -> {
                     item { LoadingItem() }
                 }
-
                 is LoadState.Error -> {
                     item { Text("Ошибка загрузки") }
                 }
-
                 else -> Unit
             }
         }

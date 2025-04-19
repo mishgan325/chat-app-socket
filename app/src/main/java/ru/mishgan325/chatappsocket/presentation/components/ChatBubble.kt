@@ -6,11 +6,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -35,7 +37,11 @@ import java.net.URL
 import ru.mishgan325.chatappsocket.models.Message
 
 @Composable
-fun ChatBubble(message: Message) {
+fun ChatBubble(
+    message: Message,
+    onEditMessage: (Long, String) -> Unit,
+    onDeleteMessage: (Long) -> Unit
+) {
     val bubbleColor =
         if (message.isMine) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondaryContainer
     val textColor =
@@ -47,6 +53,9 @@ fun ChatBubble(message: Message) {
 
     var isImagePreviewOpen by remember { mutableStateOf(false) }
     var pendingDownloadUrl by remember { mutableStateOf<String?>(null) }
+
+    var showEditDeleteDialog by remember { mutableStateOf(false) }
+    var editedMessageContent by remember { mutableStateOf(message.content) }
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -87,7 +96,15 @@ fun ChatBubble(message: Message) {
                 tonalElevation = 2.dp,
             ) {
                 Column(
-                    modifier = Modifier.padding(12.dp)
+                    modifier = Modifier.padding(12.dp).pointerInput(Unit) {
+                        detectTapGestures(
+                            onLongPress = {
+                                if (message.isMine) { // Только свои сообщения
+                                    showEditDeleteDialog = true
+                                }
+                            }
+                        )
+                    },
                 ) {
                     if (!message.isMine) {
                         Text(
@@ -189,6 +206,43 @@ fun ChatBubble(message: Message) {
         }
     }
 
+    // Диалог для редактирования и удаления
+    if (showEditDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showEditDeleteDialog = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    onEditMessage(message.id, editedMessageContent)
+                    showEditDeleteDialog = false
+                }) {
+                    Text("Сохранить")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    onDeleteMessage(message.id)
+                    showEditDeleteDialog = false
+                }) {
+                    Text("Удалить")
+                }
+            },
+            title = { Text("Редактировать сообщение") },
+            text = {
+                OutlinedTextField(
+                    value = editedMessageContent,
+                    onValueChange = { editedMessageContent = it },
+                    label = { Text("Сообщение") },
+                    singleLine = false,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            shape = MaterialTheme.shapes.large,
+            tonalElevation = 6.dp,
+            containerColor = MaterialTheme.colorScheme.surface,
+            textContentColor = MaterialTheme.colorScheme.onSurface
+        )
+    }
+
     if (isImagePreviewOpen) {
         Dialog(
             onDismissRequest = { isImagePreviewOpen = false },
@@ -228,5 +282,4 @@ fun ChatBubble(message: Message) {
             }
         }
     }
-
 }
