@@ -21,7 +21,7 @@ fun ChatMessageDto.toMessage(userId: Long?): Message {
         id = id,
         sender = Sender(sender.id, sender.username),
         content = content,
-        fileUrl = fileUrl,
+        fileUrl = fileUrl ?: "",
         timestamp = timestamp,
         isMine = userId == sender.id
     )
