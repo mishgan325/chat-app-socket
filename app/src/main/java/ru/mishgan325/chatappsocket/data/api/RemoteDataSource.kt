@@ -32,4 +32,5 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
 
     suspend fun getFileLink(fileUrl: String) = apiService.getFileLink(fileUrl)
 
+    suspend fun deleteMessage(chatMessageId: Long) = apiService.deleteMessage(chatMessageId)
 }

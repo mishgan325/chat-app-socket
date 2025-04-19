@@ -2,6 +2,7 @@ package ru.mishgan325.chatappsocket.data.api
 
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -52,4 +53,7 @@ interface ApiService {
     suspend fun getFileLink(
         @Path("fileUrl") fileUrl: String
     ): Response<GetFileLinkResponse>
+
+    @DELETE("/api/chat-messages/{chatMessageId}")
+    suspend fun deleteMessage(@Path("chatMessageId") chatMessageId: Long): Response<Unit>
 }

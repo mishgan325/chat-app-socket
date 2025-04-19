@@ -76,4 +76,10 @@ class ApiRepository @Inject constructor(
             remoteDataSource.getFileLink(fileUrl)
         }
     }
+
+    suspend fun deleteMessage(chatMessageId: Long): NetworkResult<Unit> {
+        return safeApiCall {
+            remoteDataSource.deleteMessage(chatMessageId)
+        }
+    }
 }
