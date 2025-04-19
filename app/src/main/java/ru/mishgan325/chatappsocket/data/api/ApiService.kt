@@ -5,6 +5,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.mishgan325.chatappsocket.data.api.model.AuthRequest
@@ -12,6 +13,7 @@ import ru.mishgan325.chatappsocket.data.api.model.AuthResponse
 import ru.mishgan325.chatappsocket.data.api.model.ChatMessagesResponse
 import ru.mishgan325.chatappsocket.data.api.model.CreateGroupChatRequest
 import ru.mishgan325.chatappsocket.data.api.model.CreatePrivateChatRequest
+import ru.mishgan325.chatappsocket.data.api.model.EditMessageRequest
 import ru.mishgan325.chatappsocket.data.api.model.GetFileLinkResponse
 import ru.mishgan325.chatappsocket.data.api.model.RegisterRequest
 import ru.mishgan325.chatappsocket.data.api.model.RegisterResponse
@@ -56,4 +58,11 @@ interface ApiService {
 
     @DELETE("/api/chat-messages/{chatMessageId}")
     suspend fun deleteMessage(@Path("chatMessageId") chatMessageId: Long): Response<Unit>
+
+    @PUT("/api/chat-messages/{chatMessageId}")
+    suspend fun editMessage(
+        @Path("chatMessageId") chatMessageId: Long,
+        @Body request: EditMessageRequest
+    ): Response<Unit>
+
 }

@@ -3,6 +3,7 @@ package ru.mishgan325.chatappsocket.data.api
 import ru.mishgan325.chatappsocket.data.api.model.AuthRequest
 import ru.mishgan325.chatappsocket.data.api.model.CreateGroupChatRequest
 import ru.mishgan325.chatappsocket.data.api.model.CreatePrivateChatRequest
+import ru.mishgan325.chatappsocket.data.api.model.EditMessageRequest
 import ru.mishgan325.chatappsocket.data.api.model.RegisterRequest
 import javax.inject.Inject
 
@@ -33,4 +34,6 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
     suspend fun getFileLink(fileUrl: String) = apiService.getFileLink(fileUrl)
 
     suspend fun deleteMessage(chatMessageId: Long) = apiService.deleteMessage(chatMessageId)
+
+    suspend fun editMessage(chatMessageId: Long, editMessageRequest: EditMessageRequest) = apiService.editMessage(chatMessageId, editMessageRequest)
 }

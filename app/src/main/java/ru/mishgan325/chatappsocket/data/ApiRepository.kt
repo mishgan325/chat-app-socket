@@ -6,6 +6,7 @@ import ru.mishgan325.chatappsocket.data.api.model.AuthResponse
 import ru.mishgan325.chatappsocket.data.api.model.ChatMessagesResponse
 import ru.mishgan325.chatappsocket.data.api.model.CreateGroupChatRequest
 import ru.mishgan325.chatappsocket.data.api.model.CreatePrivateChatRequest
+import ru.mishgan325.chatappsocket.data.api.model.EditMessageRequest
 import ru.mishgan325.chatappsocket.data.api.model.GetFileLinkResponse
 import ru.mishgan325.chatappsocket.data.api.model.RegisterRequest
 import ru.mishgan325.chatappsocket.data.api.model.RegisterResponse
@@ -80,6 +81,12 @@ class ApiRepository @Inject constructor(
     suspend fun deleteMessage(chatMessageId: Long): NetworkResult<Unit> {
         return safeApiCall {
             remoteDataSource.deleteMessage(chatMessageId)
+        }
+    }
+
+    suspend fun editMessage(chatMessageId: Long, newMessage: String): NetworkResult<Unit> {
+        return safeApiCall {
+            remoteDataSource.editMessage(chatMessageId, EditMessageRequest(newMessage))
         }
     }
 }
