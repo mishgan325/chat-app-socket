@@ -36,7 +36,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import ru.mishgan325.chatappsocket.presentation.components.ChatListItem
 import ru.mishgan325.chatappsocket.R
-import ru.mishgan325.chatappsocket.models.Chat
+import ru.mishgan325.chatappsocket.domain.models.Chat
 import ru.mishgan325.chatappsocket.presentation.navigation.Screen
 import ru.mishgan325.chatappsocket.utils.NetworkResult
 import ru.mishgan325.chatappsocket.viewmodels.ChatListViewModel

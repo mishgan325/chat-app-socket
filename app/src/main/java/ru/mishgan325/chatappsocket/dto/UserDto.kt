@@ -1,8 +1,7 @@
 package ru.mishgan325.chatappsocket.dto
 
 import com.google.gson.annotations.SerializedName
-import ru.mishgan325.chatappsocket.models.Chat
-import ru.mishgan325.chatappsocket.models.User
+import ru.mishgan325.chatappsocket.domain.models.User
 
 data class UserDto(
     @SerializedName("id") val id: Long,

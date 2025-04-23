@@ -7,7 +7,7 @@ import ru.mishgan325.chatappsocket.data.ApiRepository
 import ru.mishgan325.chatappsocket.data.mappers.toChatMessageDto
 import ru.mishgan325.chatappsocket.data.mappers.toMessage
 import ru.mishgan325.chatappsocket.domain.usecases.GetFileLinkUseCase
-import ru.mishgan325.chatappsocket.models.Message
+import ru.mishgan325.chatappsocket.domain.models.Message
 import ru.mishgan325.chatappsocket.utils.NetworkResult
 
 class ChatMessagesPagingSource(

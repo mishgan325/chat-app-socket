@@ -3,8 +3,8 @@ package ru.mishgan325.chatappsocket.data.mappers
 import ru.mishgan325.chatappsocket.data.api.model.Content
 import ru.mishgan325.chatappsocket.dto.ChatMessageDto
 import ru.mishgan325.chatappsocket.dto.SenderDto
-import ru.mishgan325.chatappsocket.models.Message
-import ru.mishgan325.chatappsocket.models.Sender
+import ru.mishgan325.chatappsocket.domain.models.Message
+import ru.mishgan325.chatappsocket.domain.models.Sender
 
 fun Content.toChatMessageDto(): ChatMessageDto {
     return ChatMessageDto(

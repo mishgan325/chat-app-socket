@@ -6,7 +6,7 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import ru.mishgan325.chatappsocket.data.ApiRepository
 import ru.mishgan325.chatappsocket.data.paging.ChatMessagesPagingSource
-import ru.mishgan325.chatappsocket.models.Message
+import ru.mishgan325.chatappsocket.domain.models.Message
 import ru.mishgan325.chatappsocket.utils.SessionManager
 import javax.inject.Inject
 

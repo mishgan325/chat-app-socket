@@ -1,4 +1,4 @@
-package ru.mishgan325.chatappsocket.models
+package ru.mishgan325.chatappsocket.domain.models
 
 data class Message(
     val id: Long,
