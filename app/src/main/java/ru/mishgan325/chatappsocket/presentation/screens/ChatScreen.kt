@@ -95,9 +95,10 @@ fun ChatScreen(
             reverseLayout = true
         ) {
             items(chatMessages.itemCount) { index ->
-                chatMessages[index]?.let { message ->
+                val message = if (index < chatMessages.itemCount) chatMessages[index] else null
+                message?.let {
                     ChatBubble(
-                        message = message,
+                        message = it,
                         onEditMessage = { messageId, newContent ->
                             viewModel.editMessage(messageId, newContent)
                         },
