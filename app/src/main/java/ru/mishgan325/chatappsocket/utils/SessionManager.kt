@@ -46,6 +46,10 @@ class SessionManager(context: Context) {
     }
 
     fun logout() {
-        prefs.edit { remove("jwt_token") }
+        prefs.edit() {
+            remove("jwt_token")
+                .remove("username")
+                .remove("userId")
+        }
     }
 }

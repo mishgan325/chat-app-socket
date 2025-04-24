@@ -1,6 +1,7 @@
 package ru.mishgan325.chatappsocket.presentation.screens
 
 import android.app.Activity
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +25,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,29 +55,31 @@ fun ChatListScreen(
 
     // Обработка кнопки "Назад" для выхода из приложения
     BackHandler {
-        // Завершаем приложение при нажатии назад
         (context as Activity).finish()
     }
 
+    // Переход на экран Login, если нужно
+    val navigateToLogin = chatListViewModel.navigateToLogin.collectAsState().value
 
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                chatListViewModel.getMyChats()
+    LaunchedEffect(navigateToLogin) {
+        if (navigateToLogin) {
+            Log.d("ChatListScreen", "Navigating to Login Screen")
+            // Переход на экран логина с очисткой стека
+            navHostController.navigate(Screen.Login.route) {
+                popUpTo(Screen.Login.route) { inclusive = true } // Очистка стека
             }
-        }
-
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
+            chatListViewModel.onNavigatedToLogin()  // Сброс состояния после навигации
+        } else {
+            Log.d("ChatListScreen", "Fetching chats")
+            chatListViewModel.getMyChats()
         }
     }
 
-    val state = chatListViewModel.chatListResponse.observeAsState().value ?: NetworkResult.Loading()
 
+    // Используем collectAsState для получения состояния
+    val state = chatListViewModel.chatListResponse.collectAsState().value
+
+    // Список чатов, отображаем его в зависимости от состояния
     val chats: List<Chat> = when (state) {
         is NetworkResult.Success -> state.data?.map { it.toChat() } ?: emptyList()
         is NetworkResult.Error -> {
@@ -114,7 +119,6 @@ fun ChatListScreen(
         ) {
             when (state) {
                 is NetworkResult.Loading -> {
-                    // Плавная анимация может быть добавлена через AnimatedVisibility, но тут просто красиво по центру:
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -149,7 +153,6 @@ fun ChatListScreen(
                 }
 
                 is NetworkResult.Error -> {
-                    // На случай, если вдруг переход на логин не произошёл
                     Text(
                         text = stringResource(R.string.error_loading_chats),
                         modifier = Modifier
@@ -162,29 +165,3 @@ fun ChatListScreen(
         }
     }
 }
-
-
-//@Composable
-//@Preview
-//fun ChatListPreview() {
-//    ChatListScreen(
-//        listOf
-//            (
-//            Chat(
-//                1,
-//                "ОЧЕНЬ ДЛИННОЕ НАЗВАНИЕ ПРОСТО АХЕРЕТЬ КАКАЯ ДЛИННААЯ",
-//                "Крутая группа"
-//            ),
-//            Chat(
-//                2,
-//                "фвыажлдофывлаждфыовлда",
-//                "Приватная беседа"
-//            ),
-//            Chat(
-//                3,
-//                "ОЧЕНЬ фывафыва НАЗВАНИЕ ПРОСТО АХЕРЕТЬ КАКАЯ ДЛИННААЯ",
-//                "Крутая фвыафыва"
-//            )
-//        )
-//    )
-//}

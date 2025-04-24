@@ -9,6 +9,6 @@ class DisconnectWebSocketUseCase @Inject constructor(
 ) {
     fun invoke() {
         webSocketService.disconnect()
-        Log.d("DisconnectWebSocketUseCase", "Disconected")
+        Log.d("DisconnectWebSocketUseCase", "Disconnected")
     }
 }

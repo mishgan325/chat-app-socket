@@ -24,6 +24,7 @@ import ru.mishgan325.chatappsocket.viewmodels.ChatViewModel
 import ru.mishgan325.chatappsocket.viewmodels.CreateNewChatViewModel
 import ru.mishgan325.chatappsocket.viewmodels.LoginViewModel
 import ru.mishgan325.chatappsocket.viewmodels.RegisterViewModel
+import ru.mishgan325.chatappsocket.viewmodels.SettingsViewModel
 
 @Composable
 fun NavigationHost(
@@ -36,6 +37,7 @@ fun NavigationHost(
     val chatListViewModel: ChatListViewModel = viewModel()
     val createNewChatViewModel: CreateNewChatViewModel = viewModel()
     val chatViewModel: ChatViewModel = viewModel()
+    val settingsViewModel: SettingsViewModel = viewModel()
 
     NavHost(
         navController = navController,
@@ -99,7 +101,7 @@ fun NavigationHost(
         }
 
         composable(Screen.Settings.route) {
-            SettingsScreen(navController)
+            SettingsScreen(navController, settingsViewModel)
         }
 
         composable(Screen.CreateNewChat.route) {
