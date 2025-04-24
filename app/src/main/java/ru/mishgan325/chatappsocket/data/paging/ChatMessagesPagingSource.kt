@@ -21,6 +21,14 @@ class ChatMessagesPagingSource(
         private const val TAG = "ChatMessagesPaging"
     }
 
+    // Новый список для сообщений
+    private val cachedMessages: MutableList<Message> = mutableListOf()
+
+    // Метод для добавления нового сообщения в начало
+    fun insertNewMessageAtTop(newMessage: Message) {
+        cachedMessages.add(0, newMessage)
+    }
+
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Message> {
         val page = params.key ?: 0
 
@@ -46,6 +54,9 @@ class ChatMessagesPagingSource(
                     }
                 }
 
+                // Добавляем данные с сервера в кэш
+                cachedMessages.addAll(messages)
+
                 val nextKey = if ((data?.pageable?.pageNumber ?: 0) < (data?.totalPages?.minus(1) ?: 0)) {
                     data?.pageable?.pageNumber?.plus(1)
                 } else {
@@ -53,7 +64,7 @@ class ChatMessagesPagingSource(
                 }
 
                 LoadResult.Page(
-                    data = messages,
+                    data = cachedMessages,
                     prevKey = if (page == 0) null else page - 1,
                     nextKey = nextKey
                 )
@@ -71,4 +82,3 @@ class ChatMessagesPagingSource(
         return state.anchorPosition
     }
 }
-

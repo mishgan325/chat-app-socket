@@ -15,7 +15,7 @@ import ru.mishgan325.chatappsocket.domain.usecases.CreatePrivateChatUseCase
 import ru.mishgan325.chatappsocket.domain.usecases.GetUsersUseCase
 import ru.mishgan325.chatappsocket.domain.usecases.SearchUsersUseCase
 import ru.mishgan325.chatappsocket.dto.UserDto
-import ru.mishgan325.chatappsocket.models.User
+import ru.mishgan325.chatappsocket.domain.models.User
 import ru.mishgan325.chatappsocket.utils.NetworkResult
 import javax.inject.Inject
 

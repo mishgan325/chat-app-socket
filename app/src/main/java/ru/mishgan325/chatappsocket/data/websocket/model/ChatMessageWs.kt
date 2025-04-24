@@ -1,9 +1,10 @@
 package ru.mishgan325.chatappsocket.data.websocket.model
 
 data class ChatMessageWs(
-    val id: Long,
+    val chatMessageId: Long = -1,
     val content: String,
-    val sender: String? = null,
-    val chatId: Long,
-    val fileUrl: String? = null
+    val sender: String = "",
+    val chatId: Long = -1,
+    val fileUrl: String = "",
+    val timestamp: String = ""
 )

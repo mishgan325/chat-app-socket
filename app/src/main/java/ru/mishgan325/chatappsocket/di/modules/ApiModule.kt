@@ -5,12 +5,14 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import okhttp3.OkHttp
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.mishgan325.chatappsocket.data.api.ApiService
+import ru.mishgan325.chatappsocket.data.websocket.WebSocketClient
+import ru.mishgan325.chatappsocket.data.websocket.WebSocketClientFactory
+import ru.mishgan325.chatappsocket.data.websocket.WebSocketService
 import ru.mishgan325.chatappsocket.utils.SessionManager
 import javax.inject.Singleton
 
@@ -80,5 +82,29 @@ object ApiModule {
 
     @Singleton
     @Provides
-    fun providesPostService(retrofit: Retrofit) = retrofit.create(ApiService::class.java)
+    fun providesApiService(retrofit: Retrofit) = retrofit.create(ApiService::class.java)
+
+
+    @Singleton
+    @Provides
+    @WebSocketBaseUrl
+    fun provideWebSocketBaseUrl(): String {
+        return "ws://78.24.223.206:8081/ws"
+    }
+
+    @Singleton
+    @Provides
+    fun providesWebSocketClientFactory(
+        @WebSocketBaseUrl baseUrl: String
+    ): WebSocketClientFactory {
+        return WebSocketClientFactory(baseUrl)
+    }
+
+    @Singleton
+    @Provides
+    fun provideWebSocketService(
+        webSocketClientFactory: WebSocketClientFactory
+    ): WebSocketService {
+        return WebSocketService(webSocketClientFactory)
+    }
 }

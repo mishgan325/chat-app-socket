@@ -33,6 +33,13 @@ fun ChatScreen(
     // загружаем сообщения один раз
     LaunchedEffect(chatRoomId) {
         viewModel.loadChatMessages(chatRoomId)
+        viewModel.connectToWebSocket(chatRoomId)
+    }
+
+    DisposableEffect(chatRoomId) {
+        onDispose {
+            viewModel.disconnectWebSocket()
+        }
     }
 
     val chatMessages = viewModel.chatMessages.collectAsLazyPagingItems()
@@ -70,6 +77,7 @@ fun ChatScreen(
                     onClick = {
                         if (currentInput.isNotBlank()) {
                             // TODO: отправка сообщения
+                            viewModel.sendMessage(currentInput, "", chatRoomId) //TODO: send files
                             currentInput = ""
                         }
                     }
@@ -84,6 +92,7 @@ fun ChatScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
             contentPadding = PaddingValues(bottom = 64.dp),
+            reverseLayout = true
         ) {
             items(chatMessages.itemCount) { index ->
                 chatMessages[index]?.let { message ->
