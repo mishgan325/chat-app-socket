@@ -13,7 +13,6 @@ import kotlin.let
 
 class WebSocketClient(
     private val jwtToken: String,
-    private val chatId: Long,
     private val baseUrl: String
 ) {
     private val TAG = "WebSocketChatClient"
@@ -37,7 +36,6 @@ class WebSocketClient(
             override fun onOpen(webSocket: WebSocket, response: Response) {
                 Log.d(TAG, "WebSocket connected")
                 sendStompConnect()
-                subscribeToChat()
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
@@ -105,7 +103,7 @@ class WebSocketClient(
     }
 
 
-    private fun subscribeToChat() {
+    fun subscribe(chatId: Long) {
         val subscribeFrame = buildString {
             append("SUBSCRIBE\n")
             append("id:sub-$chatId\n")
@@ -113,11 +111,21 @@ class WebSocketClient(
             append("\n")
             append("\u0000")
         }
-
         Log.d(TAG, "Sending STOMP SUBSCRIBE frame:\n$subscribeFrame")
-
         webSocket?.send(subscribeFrame)
     }
+
+    fun unsubscribe(chatId: Long) {
+        val unsubscribeFrame = buildString {
+            append("UNSUBSCRIBE\n")
+            append("id:sub-$chatId\n")
+            append("\n")
+            append("\u0000")
+        }
+        Log.d(TAG, "Sending STOMP UNSUBSCRIBE frame:\n$unsubscribeFrame")
+        webSocket?.send(unsubscribeFrame)
+    }
+
 
 
     fun sendMessage(content: String, fileUrl: String, chatId: Long) {

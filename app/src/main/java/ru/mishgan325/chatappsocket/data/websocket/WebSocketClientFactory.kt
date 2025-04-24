@@ -8,7 +8,7 @@ import javax.inject.Singleton
 class WebSocketClientFactory @Inject constructor(
     @WebSocketBaseUrl private val baseUrl: String
 ) {
-    fun create(jwtToken: String, chatId: Long): WebSocketClient {
-        return WebSocketClient(jwtToken, chatId, baseUrl)
+    fun create(jwtToken: String): WebSocketClient {
+        return WebSocketClient(jwtToken, baseUrl)
     }
 }

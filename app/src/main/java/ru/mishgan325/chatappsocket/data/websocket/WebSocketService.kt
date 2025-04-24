@@ -5,12 +5,14 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import ru.mishgan325.chatappsocket.data.websocket.model.ChatMessageWs
+import ru.mishgan325.chatappsocket.utils.SessionManager
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class WebSocketService @Inject constructor(
-    private val webSocketClientFactory: WebSocketClientFactory
+    private val webSocketClientFactory: WebSocketClientFactory,
+    private val sessionManager: SessionManager
 ) {
     private val TAG = "WebSocketService"
     private var webSocketClient: WebSocketClient? = null
@@ -22,20 +24,40 @@ class WebSocketService @Inject constructor(
     )
     val incomingMessages = _incomingMessages.asSharedFlow()
 
+    private var isConnected = false // Флаг, который отслеживает состояние подключения
+
     // Соединение
-    fun connect(jwtToken: String, chatId: Long) {
-        webSocketClient = webSocketClientFactory.create(jwtToken, chatId).apply {
+    fun connect() {
+        // Проверяем, если уже подключены, то не подключаемся снова
+        if (isConnected) {
+            Log.d(TAG, "Already connected, skipping connection.")
+            return
+        }
+
+        webSocketClient = webSocketClientFactory.create(sessionManager.getAuthToken().toString()).apply {
             setOnMessageReceivedListener { message ->
                 Log.d(TAG, "💥 WebSocketClient получил сообщение: $message")
                 val emitted = _incomingMessages.tryEmit(message)
                 Log.d(TAG, "🔥 Эмит в поток: $emitted")
             }
 
-            connect()
+            connect() // подключаемся
         }
+
+        // Помечаем, что подключение успешно
+        isConnected = true
     }
 
-    // Отправка сообщения (сделано асинхронным)
+    fun subscribe(chatId: Long) {
+        webSocketClient?.subscribe(chatId)
+        Log.d(TAG, "Подписка на чат $chatId выполнена")
+    }
+
+    fun unsubscribe(chatId: Long) {
+        webSocketClient?.unsubscribe(chatId)
+        Log.d(TAG, "Отписка от чата $chatId выполнена")
+    }
+
     suspend fun sendMessage(content: String, fileUrl: String, chatId: Long) {
         try {
             webSocketClient?.sendMessage(content, fileUrl, chatId)

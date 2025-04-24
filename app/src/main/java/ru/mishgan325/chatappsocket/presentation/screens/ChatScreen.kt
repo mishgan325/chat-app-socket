@@ -1,9 +1,6 @@
 package ru.mishgan325.chatappsocket.presentation.screens
 
 import ChatBubble
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -13,13 +10,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.paging.LoadState
-import ru.mishgan325.chatappsocket.data.api.model.ChatMessagesResponse
 import ru.mishgan325.chatappsocket.presentation.components.LoadingItem
 import ru.mishgan325.chatappsocket.viewmodels.ChatViewModel
 
@@ -33,16 +26,18 @@ fun ChatScreen(
     // загружаем сообщения один раз
     LaunchedEffect(chatRoomId) {
         viewModel.loadChatMessages(chatRoomId)
-        viewModel.connectToWebSocket(chatRoomId)
+        viewModel.subscribeToWebSocket(chatRoomId)
     }
 
     DisposableEffect(chatRoomId) {
         onDispose {
-            viewModel.disconnectWebSocket()
+            viewModel.unsubscribe(chatRoomId)
         }
     }
 
     val chatMessages = viewModel.chatMessages.collectAsLazyPagingItems()
+    val newMessages = viewModel.newMessages.collectAsState()
+
     var currentInput by remember { mutableStateOf("") }
 
     Scaffold(
@@ -94,6 +89,23 @@ fun ChatScreen(
             contentPadding = PaddingValues(bottom = 64.dp),
             reverseLayout = true
         ) {
+            items(newMessages.value.size) { index ->
+                val messageList = newMessages.value
+                val message = if (index < messageList.size) messageList[index] else null
+                message?.let {
+                    ChatBubble(
+                        message = it,
+                        onEditMessage = { messageId, newContent ->
+                            viewModel.editMessage(messageId, newContent)
+                        },
+                        onDeleteMessage = { messageId ->
+                            viewModel.deleteMessage(messageId)
+                        }
+                    )
+                }
+            }
+
+
             items(chatMessages.itemCount) { index ->
                 val message = if (index < chatMessages.itemCount) chatMessages[index] else null
                 message?.let {

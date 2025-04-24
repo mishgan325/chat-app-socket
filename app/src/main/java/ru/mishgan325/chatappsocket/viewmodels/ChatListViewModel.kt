@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import ru.mishgan325.chatappsocket.data.websocket.WebSocketService
 import ru.mishgan325.chatappsocket.domain.usecases.GetMyChatRoomsUseCase
 import ru.mishgan325.chatappsocket.dto.ChatRoomDto
 import ru.mishgan325.chatappsocket.utils.NetworkResult
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChatListViewModel @Inject constructor(
-    private val getMyChatRoomsUseCase: GetMyChatRoomsUseCase
+    private val getMyChatRoomsUseCase: GetMyChatRoomsUseCase,
+    private val webSocketService: WebSocketService
 ) : ViewModel() {
 
     private val _chatListResponse = MutableLiveData<NetworkResult<List<ChatRoomDto>>>()
@@ -48,6 +50,8 @@ class ChatListViewModel @Inject constructor(
                     is NetworkResult.Success -> {
                         Log.d(TAG, "SUCCESS: ${result.data?.toString()}")
                         _chatListState.value = NetworkResult.Success(Unit)
+
+                        webSocketService.connect()
                     }
                 }
             }

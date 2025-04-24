@@ -7,14 +7,8 @@ import java.time.temporal.ChronoField
 
 fun formatTimestampToTime(timestamp: String): String {
     return try {
-        val formatter = DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd'T'HH:mm:ss")
-            .optionalStart()
-            .appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true)
-            .optionalEnd()
-            .toFormatter()
-
-        val utcDateTime = LocalDateTime.parse(timestamp, formatter)
+        val cleanedTimestamp = timestamp.substringBefore(".")
+        val utcDateTime = LocalDateTime.parse(cleanedTimestamp, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
         val zonedUtc = utcDateTime.atZone(ZoneOffset.UTC)
         val localDateTime = zonedUtc.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime()
 

@@ -8,20 +8,21 @@ import androidx.paging.cachedIn
 import androidx.paging.filter
 import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ru.mishgan325.chatappsocket.data.mappers.toMessage
-import ru.mishgan325.chatappsocket.data.websocket.model.ChatMessageWs
 import ru.mishgan325.chatappsocket.domain.usecases.DeleteMessageUseCase
 import ru.mishgan325.chatappsocket.domain.usecases.EditMessageUseCase
 import ru.mishgan325.chatappsocket.domain.usecases.GetChatMessagesUseCase
 import ru.mishgan325.chatappsocket.domain.usecases.GetFileLinkUseCase
 import ru.mishgan325.chatappsocket.domain.models.Message
-import ru.mishgan325.chatappsocket.domain.usecases.ConnectToWebSocketUseCase
 import ru.mishgan325.chatappsocket.domain.usecases.DisconnectWebSocketUseCase
 import ru.mishgan325.chatappsocket.domain.usecases.ObserveIncomingMessagesUseCase
 import ru.mishgan325.chatappsocket.domain.usecases.SendMessageUseCase
+import ru.mishgan325.chatappsocket.domain.usecases.SubscribeWebSocketUseCase
+import ru.mishgan325.chatappsocket.domain.usecases.UnsubscribeWebSocketUseCase
 import ru.mishgan325.chatappsocket.utils.NetworkResult
 import ru.mishgan325.chatappsocket.utils.SessionManager
 import javax.inject.Inject
@@ -34,10 +35,11 @@ class ChatViewModel @Inject constructor(
     private val editMessageUseCase: EditMessageUseCase,
     private val deleteMessageUseCase: DeleteMessageUseCase,
     private val sendMessageUseCase: SendMessageUseCase,
-    private val connectToWebSocketUseCase: ConnectToWebSocketUseCase,
+    private val subscribeWebSocketUseCase: SubscribeWebSocketUseCase,
     private val observeIncomingMessagesUseCase: ObserveIncomingMessagesUseCase,
     private val disconnectWebSocketUseCase: DisconnectWebSocketUseCase,
-    private val sessionManager: SessionManager
+    private val unsubscribeWebSocketUseCase: UnsubscribeWebSocketUseCase,
+    val sessionManager: SessionManager
 ) : ViewModel() {
 
     private val TAG = "ChatViewModel"
@@ -48,15 +50,22 @@ class ChatViewModel @Inject constructor(
     private val _newMessages = MutableStateFlow<List<Message>>(emptyList())
     val newMessages: StateFlow<List<Message>> = _newMessages
 
-    fun connectToWebSocket(chatId: Long) {
-        connectToWebSocketUseCase.invoke(sessionManager.getAuthToken().toString(), chatId)
-        observeIncomingMessages()
-    }
+    private var incomingMessagesJob: Job? = null  // Для отслеживания подписки
 
-    private fun observeIncomingMessages() {
-        viewModelScope.launch {
-            observeIncomingMessagesUseCase.invoke().collect { message ->
-                Log.d(TAG, "Получено новое сообщение: $message")
+    // Подписка на WebSocket и обработка входящих сообщений
+    fun subscribeToWebSocket(chatId: Long) {
+        // Подписываемся на WebSocket
+        subscribeWebSocketUseCase.invoke(chatId)
+
+        // Если уже есть активная подписка, отменяем её
+        incomingMessagesJob?.cancel()
+
+        // Запускаем новый наблюдатель для входящих сообщений
+        incomingMessagesJob = viewModelScope.launch {
+            observeIncomingMessagesUseCase.invoke().collect { messageWs ->
+                Log.d(TAG, "Получено новое сообщение: $messageWs")
+                val newMessage = messageWs.toMessage(sessionManager.getUsername().toString())
+                _newMessages.value = listOf(newMessage) + _newMessages.value
             }
         }
     }
@@ -116,14 +125,14 @@ class ChatViewModel @Inject constructor(
         _chatMessages.value = filteredData
     }
 
-    // Используем SendMessageUseCase для отправки сообщений
     fun sendMessage(content: String, fileUrl: String = "", chatId: Long) {
         viewModelScope.launch {
             sendMessageUseCase.invoke(content, fileUrl, chatId)
         }
     }
-
-    fun disconnectWebSocket() {
-        disconnectWebSocketUseCase.invoke()
+    fun unsubscribe(chatId: Long) {
+        incomingMessagesJob?.cancel()  // Останавливаем наблюдение
+        _newMessages.value = emptyList()  // Очищаем список новых сообщений
+        unsubscribeWebSocketUseCase.invoke(chatId)
     }
 }

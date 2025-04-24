@@ -4,6 +4,7 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -25,7 +26,7 @@ object ApiModule {
 
     @Singleton
     @Provides
-    fun provideSessionManager(@dagger.hilt.android.qualifiers.ApplicationContext context: Context): SessionManager {
+    fun provideSessionManager(@ApplicationContext context: Context): SessionManager {
         return SessionManager(context)
     }
 
@@ -103,8 +104,12 @@ object ApiModule {
     @Singleton
     @Provides
     fun provideWebSocketService(
-        webSocketClientFactory: WebSocketClientFactory
+        webSocketClientFactory: WebSocketClientFactory,
+        sessionManager: SessionManager
     ): WebSocketService {
-        return WebSocketService(webSocketClientFactory)
+        return WebSocketService(
+            webSocketClientFactory,
+            sessionManager = sessionManager
+        )
     }
 }
