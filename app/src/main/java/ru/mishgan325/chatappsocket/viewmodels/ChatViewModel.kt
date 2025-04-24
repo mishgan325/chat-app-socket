@@ -126,6 +126,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun sendMessage(content: String, fileUrl: String = "", chatId: Long) {
+        Log.d(TAG, "Попытка отправить сообщение: $content")
         viewModelScope.launch {
             sendMessageUseCase.invoke(content, fileUrl, chatId)
         }

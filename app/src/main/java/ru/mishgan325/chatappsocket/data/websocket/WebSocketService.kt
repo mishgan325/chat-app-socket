@@ -60,15 +60,21 @@ class WebSocketService @Inject constructor(
 
     suspend fun sendMessage(content: String, fileUrl: String, chatId: Long) {
         try {
+            if (webSocketClient == null) {
+                connect()
+            }
             webSocketClient?.sendMessage(content, fileUrl, chatId)
         } catch (e: Exception) {
             Log.e(TAG, "Error sending message: ${e.message}")
-            // Тут можно добавить дополнительную логику обработки ошибок, например, повторная попытка
         }
     }
+
 
     // Отключение
     fun disconnect() {
         webSocketClient?.disconnect()
+        webSocketClient = null
+        isConnected = false
+        Log.d(TAG, "WebSocket отключён и обнулён")
     }
 }
