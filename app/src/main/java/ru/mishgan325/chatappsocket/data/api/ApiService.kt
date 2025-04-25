@@ -65,4 +65,9 @@ interface ApiService {
         @Body request: EditMessageRequest
     ): Response<Unit>
 
+    @POST("api/chat-rooms/{chatId}/add-user")
+    suspend fun addUserToChat(
+        @Path("chatId") chatId: Long,
+        @Query("userId") userId: Long
+    ): Response<Unit>
 }

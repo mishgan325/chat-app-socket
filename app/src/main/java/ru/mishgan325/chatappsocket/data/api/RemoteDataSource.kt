@@ -36,4 +36,6 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
     suspend fun deleteMessage(chatMessageId: Long) = apiService.deleteMessage(chatMessageId)
 
     suspend fun editMessage(chatMessageId: Long, editMessageRequest: EditMessageRequest) = apiService.editMessage(chatMessageId, editMessageRequest)
+
+    suspend fun addUserToChat(chatRoomId: Long, userId: Long) = apiService.addUserToChat(chatRoomId, userId)
 }

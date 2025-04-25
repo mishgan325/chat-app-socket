@@ -1,11 +1,13 @@
 package ru.mishgan325.chatappsocket.presentation.screens
 
 import ChatBubble
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
+import ru.mishgan325.chatappsocket.domain.models.User
+import ru.mishgan325.chatappsocket.presentation.components.AddUserToChatDialog
 import ru.mishgan325.chatappsocket.presentation.components.LoadingItem
 import ru.mishgan325.chatappsocket.viewmodels.ChatViewModel
 
@@ -39,7 +43,18 @@ fun ChatScreen(
     val newMessages = viewModel.newMessages.collectAsState()
 
     var currentInput by remember { mutableStateOf("") }
+    var showAddUserDialog by remember { mutableStateOf(false) }
 
+    if (showAddUserDialog) {
+        AddUserToChatDialog(
+            onDismiss = { showAddUserDialog = false },
+            onUserClick = {
+                viewModel.addUser(chatRoomId, it)
+                showAddUserDialog = false
+            },
+            viewModel = viewModel
+        )
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -47,7 +62,12 @@ fun ChatScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                ),
+                actions = {
+                    IconButton(onClick = { showAddUserDialog = true }) {
+                        Icon(Icons.Default.PersonAdd, contentDescription = "Добавить пользователя")
+                    }
+                }
             )
         },
         bottomBar = {

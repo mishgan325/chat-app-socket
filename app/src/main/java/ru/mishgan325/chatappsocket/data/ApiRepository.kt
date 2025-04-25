@@ -89,4 +89,10 @@ class ApiRepository @Inject constructor(
             remoteDataSource.editMessage(chatMessageId, EditMessageRequest(newMessage))
         }
     }
+
+    suspend fun addUserToChat(chatRoomId: Long, userId: Long): NetworkResult<Unit> {
+        return safeApiCall {
+            remoteDataSource.addUserToChat(chatRoomId, userId)
+        }
+    }
 }
