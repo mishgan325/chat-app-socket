@@ -100,15 +100,21 @@ class ChatViewModel @Inject constructor(
     }
 
     fun updateMessageLocally(chatMessageId: Long, newContent: String) {
-        val currentData = _chatMessages.value
-        val newData = currentData.map { message ->
+        _chatMessages.value = _chatMessages.value.map { message ->
             if (message.id == chatMessageId) {
                 message.copy(content = newContent)
             } else {
                 message
             }
         }
-        _chatMessages.value = newData
+
+        _newMessages.value = _newMessages.value.map { message ->
+            if (message.id == chatMessageId) {
+                message.copy(content = newContent)
+            } else {
+                message
+            }
+        }
     }
 
     fun deleteMessage(chatMessageId: Long) {
@@ -125,9 +131,8 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun deleteMessageLocally(chatMessageId: Long) {
-        val currentData = _chatMessages.value
-        val filteredData = currentData.filter { it.id != chatMessageId }
-        _chatMessages.value = filteredData
+        _chatMessages.value = _chatMessages.value.filter { it.id != chatMessageId }
+        _newMessages.value = _newMessages.value.filter { it.id != chatMessageId }
     }
 
     fun sendMessage(content: String, fileUrl: String = "", chatId: Long) {
