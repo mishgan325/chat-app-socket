@@ -111,13 +111,15 @@ fun NavigationHost(
         composable(
             route = Screen.Chat.route,
             arguments = listOf(
-                navArgument("chatRoomId") { type = NavType.StringType },
-                navArgument("chatName") { type = NavType.StringType }
+                navArgument("chatRoomId") { type = NavType.LongType },
+                navArgument("chatName") { type = NavType.StringType },
+                navArgument("isPrivate") { type = NavType.BoolType }
             )
         ) { backStackEntry ->
-            val chatRoomId = backStackEntry.arguments?.getString("chatRoomId")?.toLongOrNull() ?: 0L
+            val chatRoomId = backStackEntry.arguments?.getLong("chatRoomId") ?: 0L
             val chatName = backStackEntry.arguments?.getString("chatName") ?: ""
-            ChatScreen(chatRoomId, chatName, chatViewModel)
+            val isPrivate = backStackEntry.arguments?.getBoolean("isPrivate") == true
+            ChatScreen(chatRoomId, chatName, isPrivate, chatViewModel)
         }
     }
 }

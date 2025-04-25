@@ -8,8 +8,8 @@ sealed class Screen(val route: String) {
     object Chats : Screen("Chats")
     object Settings : Screen("Settings")
     object CreateNewChat : Screen("New chat")
-    object Chat : Screen("chat/{chatRoomId}/{chatName}") {
-        fun withArgs(chatRoomId: String, chatName: String): String =
-            "chat/$chatRoomId/${Uri.encode(chatName)}"
+    object Chat : Screen("chat/{chatRoomId}/{chatName}/{isPrivate}") {
+        fun withArgs(chatRoomId: Long, chatName: String, isPrivate: Boolean): String =
+            "chat/$chatRoomId/${Uri.encode(chatName)}/$isPrivate"
     }
 }

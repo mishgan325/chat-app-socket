@@ -144,7 +144,7 @@ fun ChatListScreen(
                                     .padding(vertical = 4.dp)
                                     .clickable {
                                         navHostController.navigate(
-                                            Screen.Chat.withArgs(chat.id.toString(), chat.name)
+                                            Screen.Chat.withArgs(chat.id, chat.name, chat.type == "PRIVATE")
                                         )
                                     }
                             )

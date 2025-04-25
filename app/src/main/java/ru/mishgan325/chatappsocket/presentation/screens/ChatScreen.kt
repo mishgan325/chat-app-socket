@@ -1,7 +1,6 @@
 package ru.mishgan325.chatappsocket.presentation.screens
 
 import ChatBubble
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -15,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
-import ru.mishgan325.chatappsocket.domain.models.User
 import ru.mishgan325.chatappsocket.presentation.components.AddUserToChatDialog
 import ru.mishgan325.chatappsocket.presentation.components.LoadingItem
 import ru.mishgan325.chatappsocket.viewmodels.ChatViewModel
@@ -25,6 +23,7 @@ import ru.mishgan325.chatappsocket.viewmodels.ChatViewModel
 fun ChatScreen(
     chatRoomId: Long,
     chatName: String,
+    isPrivate: Boolean,
     viewModel: ChatViewModel,
 ) {
     // загружаем сообщения один раз
@@ -64,8 +63,10 @@ fun ChatScreen(
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ),
                 actions = {
-                    IconButton(onClick = { showAddUserDialog = true }) {
-                        Icon(Icons.Default.PersonAdd, contentDescription = "Добавить пользователя")
+                    if (!isPrivate) {
+                        IconButton(onClick = { showAddUserDialog = true }) {
+                            Icon(Icons.Default.PersonAdd, contentDescription = "Добавить пользователя")
+                        }
                     }
                 }
             )
