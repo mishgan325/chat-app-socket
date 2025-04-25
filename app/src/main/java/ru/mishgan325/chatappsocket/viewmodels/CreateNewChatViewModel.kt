@@ -22,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CreateNewChatViewModel @Inject constructor(
     private val getUsersUseCase: GetUsersUseCase,
-    private val searchUsersUseChatViewModel: SearchUsersUseCase,
+    private val searchUsersUseCase: SearchUsersUseCase,
     private val createPrivateChatUseCase: CreatePrivateChatUseCase,
     private val createGroupChatUseCase: CreateGroupChatUseCase
 ) : ViewModel() {
@@ -192,7 +192,7 @@ class CreateNewChatViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val result = searchUsersUseChatViewModel.invoke(query)
+            val result = searchUsersUseCase.invoke(query)
             when (result) {
                 is NetworkResult.Success -> {
                     _searchResults.value = result.data?.map { dto ->
