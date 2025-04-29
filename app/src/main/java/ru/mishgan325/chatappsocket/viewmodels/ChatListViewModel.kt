@@ -35,6 +35,8 @@ class ChatListViewModel @Inject constructor(
                 _chatListResponse.value = result
 
                 when (result) {
+                    is NetworkResult.Idle -> Log.d(TAG, "Idle")
+
                     is NetworkResult.Error -> {
                         Log.d(TAG, "Error: ${result.message}")
                     }

@@ -69,7 +69,7 @@ fun CreateNewChatScreen(
             emptyList()
         }
 
-        is NetworkResult.Loading -> emptyList()
+        else -> emptyList()
     }
 
     val searchQuery by createNewChatViewModel.searchQuery.collectAsState()
@@ -135,12 +135,17 @@ fun CreateNewChatScreen(
             ) {
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ){
+                ) {
                     selectedUserIds.forEach { userId ->
                         val user = allUsers.find { it.id == userId }
                         if (user != null) {
                             AssistChip(
-                                onClick = { createNewChatViewModel.onUserCheckedChange(userId, false) },
+                                onClick = {
+                                    createNewChatViewModel.onUserCheckedChange(
+                                        userId,
+                                        false
+                                    )
+                                },
                                 label = { Text(user.username) },
                                 trailingIcon = {
                                     Icon(
@@ -175,21 +180,6 @@ fun CreateNewChatScreen(
             )
 
             when (state) {
-                is NetworkResult.Loading -> {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        CircularProgressIndicator()
-                        Text(
-                            text = stringResource(R.string.loading),
-                            modifier = Modifier.padding(top = 8.dp),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                }
-
                 is NetworkResult.Success -> {
                     LazyColumn(
                         modifier = Modifier
@@ -219,6 +209,21 @@ fun CreateNewChatScreen(
                             .padding(16.dp),
                         color = MaterialTheme.colorScheme.error
                     )
+                }
+
+                else -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator()
+                        Text(
+                            text = stringResource(R.string.loading),
+                            modifier = Modifier.padding(top = 8.dp),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                 }
             }
         }

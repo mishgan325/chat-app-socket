@@ -24,22 +24,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
-import ru.mishgan325.chatappsocket.presentation.components.ChatListItem
 import ru.mishgan325.chatappsocket.R
 import ru.mishgan325.chatappsocket.domain.models.Chat
+import ru.mishgan325.chatappsocket.presentation.components.ChatListItem
 import ru.mishgan325.chatappsocket.presentation.navigation.Screen
 import ru.mishgan325.chatappsocket.utils.NetworkResult
 import ru.mishgan325.chatappsocket.viewmodels.ChatListViewModel
@@ -53,7 +48,6 @@ fun ChatListScreen(
 ) {
     val context = LocalContext.current
 
-    // Обработка кнопки "Назад" для выхода из приложения
     BackHandler {
         (context as Activity).finish()
     }
@@ -81,31 +75,29 @@ fun ChatListScreen(
             navHostController.navigate(Screen.Login.route)
             emptyList()
         }
-        is NetworkResult.Loading -> emptyList()
+
+        else -> emptyList()
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.chats)) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    navHostController.navigate(Screen.CreateNewChat.route)
-                },
+    Scaffold(topBar = {
+        TopAppBar(
+            title = { Text(stringResource(R.string.chats)) },
+            colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-            ) {
-                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_new_chat))
-            }
+                titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        )
+    }, floatingActionButton = {
+        FloatingActionButton(
+            onClick = {
+                navHostController.navigate(Screen.CreateNewChat.route)
+            },
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+        ) {
+            Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_new_chat))
         }
-    ) { innerPadding ->
+    }) { innerPadding ->
         Surface(
             modifier = Modifier
                 .fillMaxSize()
@@ -113,19 +105,14 @@ fun ChatListScreen(
             color = MaterialTheme.colorScheme.background
         ) {
             when (state) {
-                is NetworkResult.Loading -> {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        CircularProgressIndicator()
-                        Text(
-                            text = stringResource(R.string.loading),
-                            modifier = Modifier.padding(top = 8.dp),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
+                is NetworkResult.Error -> {
+                    Text(
+                        text = stringResource(R.string.error_loading_chats),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
 
                 is NetworkResult.Success -> {
@@ -139,22 +126,28 @@ fun ChatListScreen(
                                     .padding(vertical = 4.dp)
                                     .clickable {
                                         navHostController.navigate(
-                                            Screen.Chat.withArgs(chat.id, chat.name, chat.type == "PRIVATE")
+                                            Screen.Chat.withArgs(
+                                                chat.id, chat.name, chat.type == "PRIVATE"
+                                            )
                                         )
-                                    }
-                            )
+                                    })
                         }
                     }
                 }
 
-                is NetworkResult.Error -> {
-                    Text(
-                        text = stringResource(R.string.error_loading_chats),
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                        color = MaterialTheme.colorScheme.error
-                    )
+                else -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator()
+                        Text(
+                            text = stringResource(R.string.loading),
+                            modifier = Modifier.padding(top = 8.dp),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                 }
             }
         }

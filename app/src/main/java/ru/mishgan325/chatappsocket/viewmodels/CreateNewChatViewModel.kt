@@ -10,12 +10,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import ru.mishgan325.chatappsocket.domain.models.User
 import ru.mishgan325.chatappsocket.domain.usecases.CreateGroupChatUseCase
 import ru.mishgan325.chatappsocket.domain.usecases.CreatePrivateChatUseCase
 import ru.mishgan325.chatappsocket.domain.usecases.GetUsersUseCase
 import ru.mishgan325.chatappsocket.domain.usecases.SearchUsersUseCase
 import ru.mishgan325.chatappsocket.dto.UserDto
-import ru.mishgan325.chatappsocket.domain.models.User
 import ru.mishgan325.chatappsocket.utils.NetworkResult
 import javax.inject.Inject
 
@@ -69,6 +69,7 @@ class CreateNewChatViewModel @Inject constructor(
                 _getUsersResponse.value = result
 
                 when (result) {
+                    is NetworkResult.Idle -> Log.d(TAG, "Idle")
                     is NetworkResult.Error -> {
                         Log.d(TAG, "Error: ${result.message}")
                         _getUsersState.value = NetworkResult.Error(null, result.message)
@@ -132,6 +133,7 @@ class CreateNewChatViewModel @Inject constructor(
                 _createChatResponse.value = result
 
                 when (result) {
+                    is NetworkResult.Idle -> Log.d(TAG, "Idle")
                     is NetworkResult.Error -> {
                         Log.d(TAG, "Error: ${result.message}")
                         _createChatState.value = NetworkResult.Error(null, result.message)
@@ -160,6 +162,7 @@ class CreateNewChatViewModel @Inject constructor(
                 _createChatResponse.value = result
 
                 when (result) {
+                    is NetworkResult.Idle -> Log.d(TAG, "Idle")
                     is NetworkResult.Error -> {
                         Log.d(TAG, "Error: ${result.message}")
                         _createChatState.value = NetworkResult.Error(null, result.message)
@@ -194,6 +197,8 @@ class CreateNewChatViewModel @Inject constructor(
         viewModelScope.launch {
             val result = searchUsersUseCase.invoke(query)
             when (result) {
+                is NetworkResult.Idle -> Log.d(TAG, "Idle")
+
                 is NetworkResult.Success -> {
                     _searchResults.value = result.data?.map { dto ->
                         User(dto.id, dto.username)

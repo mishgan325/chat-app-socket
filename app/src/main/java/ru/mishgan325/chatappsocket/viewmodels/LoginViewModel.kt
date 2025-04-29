@@ -1,8 +1,6 @@
 package ru.mishgan325.chatappsocket.viewmodels
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,6 +38,8 @@ class LoginViewModel @Inject constructor(
             _authResponse.value = result
 
             when (result) {
+                is NetworkResult.Idle -> Log.d(TAG, "Idle")
+
                 is NetworkResult.Error -> {
                     Log.d(TAG, "Error: ${result.message}")
                     _authState.value = NetworkResult.Error(null, result.message)
@@ -68,6 +68,8 @@ class LoginViewModel @Inject constructor(
             val result = whoamiUseCase.invoke()
 
             when (result) {
+                is NetworkResult.Idle -> Log.d(TAG, "Idle")
+
                 is NetworkResult.Error -> {
                     Log.d(TAG, "Error: ${result.message}")
                     _authState.value = NetworkResult.Error(null, result.message)
