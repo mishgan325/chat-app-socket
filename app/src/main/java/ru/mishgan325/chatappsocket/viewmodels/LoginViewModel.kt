@@ -23,8 +23,8 @@ class LoginViewModel @Inject constructor(
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
-    private val _authResponse = MutableLiveData<NetworkResult<AuthResponse>>()
-    val authResponse: LiveData<NetworkResult<AuthResponse>> get() = _authResponse
+    private val _authResponse = MutableStateFlow<NetworkResult<AuthResponse>?>(null)
+    val authResponse: StateFlow<NetworkResult<AuthResponse>?> = _authResponse
 
     private val _authState = MutableStateFlow<NetworkResult<Unit>>(NetworkResult.Loading())
     val authState: StateFlow<NetworkResult<Unit>> = _authState
@@ -89,5 +89,9 @@ class LoginViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun resetAuthResponse() {
+        _authResponse.value = NetworkResult.Loading()
     }
 }

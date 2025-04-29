@@ -90,4 +90,8 @@ class RegisterViewModel @Inject constructor(
             }
         }
     }
+
+    fun resetAuthResponse() {
+        _authResponse.value = NetworkResult.Loading()
+    }
 }

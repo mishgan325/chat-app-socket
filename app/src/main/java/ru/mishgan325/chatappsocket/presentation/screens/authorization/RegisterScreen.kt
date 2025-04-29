@@ -1,5 +1,6 @@
 package ru.mishgan325.chatappsocket.presentation.screens.authorization
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -52,11 +53,13 @@ fun RegisterScreen(
 
     val state = registerViewModel.authResponse.observeAsState().value ?: NetworkResult.Loading()
 
-    if (state is NetworkResult.Success) {
-        LaunchedEffect(Unit) {
+    LaunchedEffect(state) {
+        if (state is NetworkResult.Success) {
+            Log.d("RegisterScreen", "Authorization success, moving to chat list screen")
             navHostController.navigate(Screen.Chats.route) {
                 popUpTo(Screen.Chats.route) { inclusive = true }
             }
+            registerViewModel.resetAuthResponse()
         }
     }
 
@@ -128,10 +131,3 @@ fun RegisterScreen(
     }
 
 }
-
-
-//@Composable
-//@Preview
-//fun RegisterScreenPreview() {
-//    RegisterScreen({}, apiInterface = apiService)
-//}

@@ -25,19 +25,9 @@ class ChatListViewModel @Inject constructor(
         MutableStateFlow<NetworkResult<List<ChatRoomDto>>>(NetworkResult.Loading())
     val chatListResponse: StateFlow<NetworkResult<List<ChatRoomDto>>> = _chatListResponse
 
-    private val _navigateToLogin = MutableStateFlow(false)
-    val navigateToLogin: StateFlow<Boolean> = _navigateToLogin
-
     private val TAG = "ChatListViewModel"
 
     fun getMyChats() {
-        if (!sessionManager.isLoggedIn()) {
-            Log.d(TAG, "Пользователь не авторизован, отмена")
-            if (!_navigateToLogin.value) { // Проверяем, что переход ещё не был сделан
-                _navigateToLogin.value = true // Триггер на навигацию
-            }
-            return
-        }
         viewModelScope.launch {
             _chatListResponse.value = NetworkResult.Loading()
 
@@ -47,13 +37,12 @@ class ChatListViewModel @Inject constructor(
                 when (result) {
                     is NetworkResult.Error -> {
                         Log.d(TAG, "Error: ${result.message}")
-                        if (!_navigateToLogin.value) { // Проверяем, что переход ещё не был сделан
-                            _navigateToLogin.value = true // Триггер на навигацию
-                        }
                     }
+
                     is NetworkResult.Loading -> {
                         // Загрузка, ничего не меняем
                     }
+
                     is NetworkResult.Success -> {
                         Log.d(TAG, "SUCCESS: ${result.data?.toString()}")
                         webSocketService.connect()
@@ -63,8 +52,7 @@ class ChatListViewModel @Inject constructor(
         }
     }
 
-
-    fun onNavigatedToLogin() {
-        _navigateToLogin.value = false
+    fun isLoggedIn(): Boolean {
+        return sessionManager.isLoggedIn()
     }
 }

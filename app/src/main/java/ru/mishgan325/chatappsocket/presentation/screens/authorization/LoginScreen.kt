@@ -1,5 +1,6 @@
 package ru.mishgan325.chatappsocket.presentation.screens.authorization
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -49,13 +51,15 @@ fun LoginScreen(
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    val state = loginViewModel.authResponse.observeAsState().value
+    val state by loginViewModel.authResponse.collectAsState()
 
     LaunchedEffect(state) {
         if (state is NetworkResult.Success) {
+            Log.d("LoginScreen", "Authorization success, moving to chat list screen")
             navHostController.navigate(Screen.Chats.route) {
                 popUpTo(Screen.Chats.route) { inclusive = true }
             }
+            loginViewModel.resetAuthResponse()
         }
     }
 
@@ -127,10 +131,3 @@ fun LoginScreen(
         )
     }
 }
-
-
-//@Composable
-//@Preview
-//fun LoginScreenPreview() {
-//    LoginScreen(apiInterface = apiService, navHostController = navController)
-//}

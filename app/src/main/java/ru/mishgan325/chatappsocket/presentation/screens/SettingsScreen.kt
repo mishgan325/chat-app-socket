@@ -58,13 +58,14 @@ fun SettingsScreen(
                     onClick = {
                         viewModel.logout()
                         navHostController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.Login.route) { inclusive = true }
                         }
                     },
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                        contentDescription = null,
+                        contentDescription = "Выход",
                         modifier = Modifier.padding(end = 8.dp)
                     )
                     Text(text = stringResource(R.string.log_out))

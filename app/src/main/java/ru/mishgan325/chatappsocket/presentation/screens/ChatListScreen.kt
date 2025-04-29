@@ -58,17 +58,12 @@ fun ChatListScreen(
         (context as Activity).finish()
     }
 
-    // Переход на экран Login, если нужно
-    val navigateToLogin = chatListViewModel.navigateToLogin.collectAsState().value
-
-    LaunchedEffect(navigateToLogin) {
-        if (navigateToLogin) {
-            Log.d("ChatListScreen", "Navigating to Login Screen")
-            // Переход на экран логина с очисткой стека
+    LaunchedEffect(Unit) {
+        if (!chatListViewModel.isLoggedIn()) {
+            Log.d("ChatListScreen", "Outdated token")
             navHostController.navigate(Screen.Login.route) {
-                popUpTo(Screen.Login.route) { inclusive = true } // Очистка стека
+                popUpTo(Screen.Chats.route) { inclusive = true }
             }
-            chatListViewModel.onNavigatedToLogin()  // Сброс состояния после навигации
         } else {
             Log.d("ChatListScreen", "Fetching chats")
             chatListViewModel.getMyChats()
