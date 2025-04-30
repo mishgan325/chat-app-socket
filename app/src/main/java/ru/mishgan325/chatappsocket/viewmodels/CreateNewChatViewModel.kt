@@ -36,24 +36,23 @@ class CreateNewChatViewModel @Inject constructor(
     private val _selectedUserIds = MutableStateFlow<List<Long>>(emptyList())
     val selectedUserIds: StateFlow<List<Long>> = _selectedUserIds.asStateFlow()
 
-    private val _getUsersResponse = MutableLiveData<NetworkResult<List<UserDto>>>()
-    val getUsersResponse: LiveData<NetworkResult<List<UserDto>>> get() = _getUsersResponse
+    private val _getUsersResult = MutableStateFlow<NetworkResult<List<UserDto>>>(NetworkResult.Loading())
+    val getUsersResult: StateFlow<NetworkResult<List<UserDto>>> = _getUsersResult.asStateFlow()
 
     private val _getUsersState = MutableStateFlow<NetworkResult<Unit>>(NetworkResult.Loading())
-    val getUsersState: StateFlow<NetworkResult<Unit>> = _getUsersState
+    val getUsersState: StateFlow<NetworkResult<Unit>> = _getUsersState.asStateFlow()
 
-    private val _createChatResponse = MutableLiveData<NetworkResult<Unit>>()
-    val createChatResponse: LiveData<NetworkResult<Unit>> = _createChatResponse
+    private val _createChatResult = MutableStateFlow<NetworkResult<Unit>>(NetworkResult.Idle())
+    val createChatResult: StateFlow<NetworkResult<Unit>> = _createChatResult.asStateFlow()
 
     private val _createChatState = MutableStateFlow<NetworkResult<Unit>>(NetworkResult.Loading())
-    val createChatState: StateFlow<NetworkResult<Unit>> = _createChatState
+    val createChatState: StateFlow<NetworkResult<Unit>> = _createChatState.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
     private val _searchResults = MutableStateFlow<List<User>>(emptyList())
     val searchResults: StateFlow<List<User>> = _searchResults.asStateFlow()
-
 
     private val TAG = "CreateNewChatViewModel"
 
@@ -65,26 +64,22 @@ class CreateNewChatViewModel @Inject constructor(
         viewModelScope.launch {
             _getUsersState.value = NetworkResult.Loading()
 
-            getUsersUseCase.invoke().let { result ->
-                _getUsersResponse.value = result
+            val result = getUsersUseCase.invoke()
+            _getUsersResult.value = result
 
-                when (result) {
-                    is NetworkResult.Idle -> Log.d(TAG, "Idle")
-                    is NetworkResult.Error -> {
-                        Log.d(TAG, "Error: ${result.message}")
-                        _getUsersState.value = NetworkResult.Error(null, result.message)
-                    }
-
-                    is NetworkResult.Loading -> {
-                        Log.d(TAG, "Register is loading")
-                        _getUsersState.value = NetworkResult.Loading()
-                    }
-
-                    is NetworkResult.Success -> {
-                        Log.d(TAG, "SUCCESS: ${result.data?.toString()}")
-                        _getUsersState.value = NetworkResult.Success(Unit)
-                    }
+            when (result) {
+                is NetworkResult.Error -> {
+                    Log.d(TAG, "Error: ${result.message}")
+                    _getUsersState.value = NetworkResult.Error(null, result.message)
                 }
+                is NetworkResult.Loading -> {
+                    _getUsersState.value = NetworkResult.Loading()
+                }
+                is NetworkResult.Success -> {
+                    Log.d(TAG, "SUCCESS: ${result.data}")
+                    _getUsersState.value = NetworkResult.Success(Unit)
+                }
+                else -> Unit
             }
         }
     }
@@ -104,9 +99,6 @@ class CreateNewChatViewModel @Inject constructor(
     fun createChat(onInvalidSelection: (message: String) -> Unit, onSuccess: () -> Unit) {
         val selected = _selectedUserIds.value
 
-        Log.d(TAG, "Selected users: $selected")
-        Log.d(TAG, "Chat name: ${chatName.value}")
-
         if (selected.isEmpty()) {
             onInvalidSelection("Необходимо выбрать пользователей")
             return
@@ -125,60 +117,50 @@ class CreateNewChatViewModel @Inject constructor(
         }
     }
 
-    fun createPrivateChat(name: String, userId: Long, onSuccess: () -> Unit) {
+    private fun createPrivateChat(name: String, userId: Long, onSuccess: () -> Unit) {
         viewModelScope.launch {
             _createChatState.value = NetworkResult.Loading()
 
-            createPrivateChatUseCase.invoke(name, userId).let { result ->
-                _createChatResponse.value = result
+            val result = createPrivateChatUseCase.invoke(name, userId)
+            _createChatResult.value = result
 
-                when (result) {
-                    is NetworkResult.Idle -> Log.d(TAG, "Idle")
-                    is NetworkResult.Error -> {
-                        Log.d(TAG, "Error: ${result.message}")
-                        _createChatState.value = NetworkResult.Error(null, result.message)
-                    }
-
-                    is NetworkResult.Loading -> {
-                        Log.d(TAG, "Register is loading")
-                        _createChatState.value = NetworkResult.Loading()
-                    }
-
-                    is NetworkResult.Success -> {
-                        Log.d(TAG, "SUCCESS: ${result.data?.toString()}")
-                        _createChatState.value = NetworkResult.Success(Unit)
-                        onSuccess()
-                    }
+            when (result) {
+                is NetworkResult.Error -> {
+                    Log.d(TAG, "Error: ${result.message}")
+                    _createChatState.value = NetworkResult.Error(null, result.message)
                 }
+                is NetworkResult.Loading -> {
+                    _createChatState.value = NetworkResult.Loading()
+                }
+                is NetworkResult.Success -> {
+                    _createChatState.value = NetworkResult.Success(Unit)
+                    onSuccess()
+                }
+                else -> Unit
             }
         }
     }
 
-    fun createGroupChat(name: String, memberIds: List<Long>, onSuccess: () -> Unit) {
+    private fun createGroupChat(name: String, memberIds: List<Long>, onSuccess: () -> Unit) {
         viewModelScope.launch {
             _createChatState.value = NetworkResult.Loading()
 
-            createGroupChatUseCase.invoke(name, memberIds).let { result ->
-                _createChatResponse.value = result
+            val result = createGroupChatUseCase.invoke(name, memberIds)
+            _createChatResult.value = result
 
-                when (result) {
-                    is NetworkResult.Idle -> Log.d(TAG, "Idle")
-                    is NetworkResult.Error -> {
-                        Log.d(TAG, "Error: ${result.message}")
-                        _createChatState.value = NetworkResult.Error(null, result.message)
-                    }
-
-                    is NetworkResult.Loading -> {
-                        Log.d(TAG, "Register is loading")
-                        _createChatState.value = NetworkResult.Loading()
-                    }
-
-                    is NetworkResult.Success -> {
-                        Log.d(TAG, "SUCCESS: ${result.data?.toString()}")
-                        _createChatState.value = NetworkResult.Success(Unit)
-                        onSuccess()
-                    }
+            when (result) {
+                is NetworkResult.Error -> {
+                    Log.d(TAG, "Error: ${result.message}")
+                    _createChatState.value = NetworkResult.Error(null, result.message)
                 }
+                is NetworkResult.Loading -> {
+                    _createChatState.value = NetworkResult.Loading()
+                }
+                is NetworkResult.Success -> {
+                    _createChatState.value = NetworkResult.Success(Unit)
+                    onSuccess()
+                }
+                else -> Unit
             }
         }
     }
@@ -197,24 +179,15 @@ class CreateNewChatViewModel @Inject constructor(
         viewModelScope.launch {
             val result = searchUsersUseCase.invoke(query)
             when (result) {
-                is NetworkResult.Idle -> Log.d(TAG, "Idle")
-
                 is NetworkResult.Success -> {
-                    _searchResults.value = result.data?.map { dto ->
-                        User(dto.id, dto.username)
-                    } ?: emptyList()
+                    _searchResults.value = result.data?.map { User(it.id, it.username) } ?: emptyList()
                 }
-
                 is NetworkResult.Error -> {
                     Log.d(TAG, "Search error: ${result.message}")
                     _searchResults.value = emptyList()
                 }
-
-                is NetworkResult.Loading -> {
-                    // optionally show loading
-                }
+                else -> Unit
             }
         }
     }
-
 }

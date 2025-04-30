@@ -1,6 +1,7 @@
 package ru.mishgan325.chatappsocket.presentation
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -21,12 +22,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
+import ru.mishgan325.chatappsocket.data.websocket.WebSocketService
 import ru.mishgan325.chatappsocket.dto.TabBarItem
 import ru.mishgan325.chatappsocket.presentation.components.TabView
 import ru.mishgan325.chatappsocket.presentation.navigation.Screen
@@ -44,27 +50,56 @@ import ru.mishgan325.chatappsocket.viewmodels.ChatViewModel
 import ru.mishgan325.chatappsocket.viewmodels.CreateNewChatViewModel
 import ru.mishgan325.chatappsocket.viewmodels.LoginViewModel
 import ru.mishgan325.chatappsocket.viewmodels.RegisterViewModel
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(), LifecycleEventObserver {
 
-    private val loginViewModel: LoginViewModel by viewModels()
-    private val registerViewModel: RegisterViewModel by viewModels()
-    private val chatListViewModel: ChatListViewModel by viewModels()
-    private val createNewChatViewModel: CreateNewChatViewModel by viewModels()
-    private val chatViewModel: ChatViewModel by viewModels()
+    @Inject
+    lateinit var webSocketService: WebSocketService
+
+    private lateinit var sessionManager: SessionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        sessionManager = SessionManager(this)
+
+        // Подписка на жизненный цикл приложения
+        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
+
         enableEdgeToEdge()
 
-        val sessionManager = SessionManager(this)
         val startDestination = if (sessionManager.isLoggedIn()) Screen.Chats.route else Screen.Login.route
 
         setContent {
             ChatappsocketTheme {
                 MainScreen(startDestination)
             }
+        }
+    }
+
+    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        when (event) {
+            Lifecycle.Event.ON_START -> {
+                if (sessionManager.isLoggedIn()) {
+                    webSocketService.connect()
+                }
+            }
+            Lifecycle.Event.ON_STOP -> {
+                webSocketService.disconnect()
+            }
+            else -> {}
+        }
+
+        when (event) {
+            Lifecycle.Event.ON_CREATE -> Log.d("Lifecycle", "Создано")
+            Lifecycle.Event.ON_START -> Log.d("Lifecycle", "Старт")
+            Lifecycle.Event.ON_RESUME -> Log.d("Lifecycle", "Резюмировано")
+            Lifecycle.Event.ON_PAUSE -> Log.d("Lifecycle", "Пауза")
+            Lifecycle.Event.ON_STOP -> Log.d("Lifecycle", "Остановлено")
+            Lifecycle.Event.ON_DESTROY -> Log.d("Lifecycle", "Уничтожено")
+            Lifecycle.Event.ON_ANY -> Log.d("Lifecycle", "Любое событие")
         }
     }
 }

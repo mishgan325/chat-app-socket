@@ -34,15 +34,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ru.mishgan325.chatappsocket.R
 import ru.mishgan325.chatappsocket.domain.models.User
@@ -54,60 +54,56 @@ import ru.mishgan325.chatappsocket.viewmodels.CreateNewChatViewModel
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun CreateNewChatScreen(
-    navHostController: NavHostController,
-    createNewChatViewModel: CreateNewChatViewModel
+    navHostController: NavHostController, createNewChatViewModel: CreateNewChatViewModel
 ) {
     val context = LocalContext.current
 
-    val state =
-        createNewChatViewModel.getUsersResponse.observeAsState().value ?: NetworkResult.Loading()
+    val state = createNewChatViewModel.getUsersResult.collectAsStateWithLifecycle()
 
-    val allUsers: List<User> = when (state) {
-        is NetworkResult.Success -> state.data?.map { it.toUser() } ?: emptyList()
-        is NetworkResult.Error -> {
+    LaunchedEffect(state.value) {
+        if (state.value is NetworkResult.Error) {
+            Toast.makeText(context, "Ошибка загрузки пользователей", Toast.LENGTH_SHORT).show()
             navHostController.navigate(Screen.Chats.route)
+        }
+    }
+
+    val allUsers: List<User> = when (state.value) {
+        is NetworkResult.Success -> state.value.data?.map { it.toUser() } ?: emptyList()
+        is NetworkResult.Error -> {
             emptyList()
         }
-
         else -> emptyList()
     }
 
-    val searchQuery by createNewChatViewModel.searchQuery.collectAsState()
-    val searchResults by createNewChatViewModel.searchResults.collectAsState()
-    val chatName by createNewChatViewModel.chatName.collectAsState()
-    val selectedUserIds by createNewChatViewModel.selectedUserIds.collectAsState()
+    val searchQuery by createNewChatViewModel.searchQuery.collectAsStateWithLifecycle()
+    val searchResults by createNewChatViewModel.searchResults.collectAsStateWithLifecycle()
+    val chatName by createNewChatViewModel.chatName.collectAsStateWithLifecycle()
+    val selectedUserIds by createNewChatViewModel.selectedUserIds.collectAsStateWithLifecycle()
 
     val usersToDisplay = if (searchQuery.isNotBlank()) searchResults else allUsers
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.create_new_chat)) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+    Scaffold(topBar = {
+        TopAppBar(
+            title = { Text(stringResource(R.string.create_new_chat)) },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    createNewChatViewModel.createChat(
-                        onInvalidSelection = { message ->
-                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                        },
-                        onSuccess = {
-                            navHostController.navigate(Screen.Chats.route) {
-                                popUpTo(Screen.Chats.route) { inclusive = true }
-                            }
-                        }
-                    )
-                }
-            ) {
-                Icon(Icons.Default.Check, contentDescription = "Create Chat")
-            }
+        )
+    }, floatingActionButton = {
+        FloatingActionButton(
+            onClick = {
+                createNewChatViewModel.createChat(onInvalidSelection = { message ->
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                }, onSuccess = {
+                    navHostController.navigate(Screen.Chats.route) {
+                        popUpTo(Screen.Chats.route) { inclusive = true }
+                    }
+                })
+            }) {
+            Icon(Icons.Default.Check, contentDescription = "Create Chat")
         }
-    ) { innerPadding ->
+    }) { innerPadding ->
 
         Column(
             modifier = Modifier
@@ -142,8 +138,7 @@ fun CreateNewChatScreen(
                             AssistChip(
                                 onClick = {
                                     createNewChatViewModel.onUserCheckedChange(
-                                        userId,
-                                        false
+                                        userId, false
                                     )
                                 },
                                 label = { Text(user.username) },
@@ -179,11 +174,10 @@ fun CreateNewChatScreen(
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
             )
 
-            when (state) {
+            when (state.value) {
                 is NetworkResult.Success -> {
                     LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         contentPadding = PaddingValues(bottom = 64.dp)
                     ) {
@@ -195,8 +189,7 @@ fun CreateNewChatScreen(
                                 isSelected = isSelected,
                                 onCheckedChange = { isChecked ->
                                     createNewChatViewModel.onUserCheckedChange(user.id, isChecked)
-                                }
-                            )
+                                })
                         }
                     }
                 }
