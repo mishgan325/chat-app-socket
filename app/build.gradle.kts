@@ -110,4 +110,6 @@ dependencies {
     // Coil
     implementation("io.coil-kt:coil-compose:2.5.0")
 
+    implementation("androidx.lifecycle:lifecycle-process")
+
 }
