@@ -36,6 +36,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ru.mishgan325.chatappsocket.R
 import ru.mishgan325.chatappsocket.presentation.navigation.Screen
@@ -53,7 +54,7 @@ fun RegisterScreen(
     var password by remember { mutableStateOf("") }
 
 
-    val state = registerViewModel.authResponse.observeAsState().value ?: NetworkResult.Loading()
+    val state by registerViewModel.authResponse.collectAsStateWithLifecycle()
 
     LaunchedEffect(state) {
         if (state is NetworkResult.Success) {

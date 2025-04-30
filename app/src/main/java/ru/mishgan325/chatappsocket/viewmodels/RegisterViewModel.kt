@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import ru.mishgan325.chatappsocket.data.api.model.AuthResponse
 import ru.mishgan325.chatappsocket.data.api.model.RegisterResponse
 import ru.mishgan325.chatappsocket.domain.usecases.RegisterUseCase
 import ru.mishgan325.chatappsocket.domain.usecases.WhoamiUseCase
@@ -23,11 +24,12 @@ class RegisterViewModel @Inject constructor(
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
-    private val _authResponse = MutableLiveData<NetworkResult<RegisterResponse>>()
-    val authResponse: LiveData<NetworkResult<RegisterResponse>> get() = _authResponse
+    private val _authResponse = MutableStateFlow<NetworkResult<RegisterResponse>?>(null)
+    val authResponse: StateFlow<NetworkResult<RegisterResponse>?> = _authResponse
 
     private val _authState = MutableStateFlow<NetworkResult<Unit>>(NetworkResult.Loading())
     val authState: StateFlow<NetworkResult<Unit>> = _authState
+
 
     private val TAG = "RegisterViewModel"
 
@@ -35,31 +37,31 @@ class RegisterViewModel @Inject constructor(
         viewModelScope.launch {
             _authState.value = NetworkResult.Loading()
 
-            registerUseCase.invoke(email, username, password).let { result ->
-                _authResponse.value = result
+            val result = registerUseCase.invoke(email, username, password)
 
-                when (result) {
-                    is NetworkResult.Idle -> Log.d(TAG, "Idle")
+            _authResponse.value = result
 
-                    is NetworkResult.Error -> {
-                        Log.d(TAG, "Error: ${result.message}")
-                        _authState.value = NetworkResult.Error(null, result.message)
-                    }
+            when (result) {
+                is NetworkResult.Idle -> Log.d(TAG, "Idle")
 
-                    is NetworkResult.Loading -> {
-                        Log.d(TAG, "Register is loading")
-                        _authState.value = NetworkResult.Loading()
-                    }
+                is NetworkResult.Error -> {
+                    Log.d(TAG, "Error: ${result.message}")
+                    _authState.value = NetworkResult.Error(null, result.message)
+                }
 
-                    is NetworkResult.Success -> {
+                is NetworkResult.Loading -> {
+                    Log.d(TAG, "Auth is loading")
+                    _authState.value = NetworkResult.Loading()
+                }
+
+                is NetworkResult.Success -> {
+                    Log.d(TAG, "SUCCESS: ${result.data?.token}")
+                    _authState.value = NetworkResult.Success(Unit)
+                    result.data?.let { data ->
+                        sessionManager.saveAuthToken(data.token)
                         Log.d(TAG, "SUCCESS: ${result.data?.token}")
-                        _authState.value = NetworkResult.Success(Unit)
-                        result.data?.let { data ->
-                            sessionManager.saveAuthToken(data.token)
-                            Log.d(TAG, "SUCCESS: ${result.data?.token}")
-                        }
-                        saveUserData()
                     }
+                    saveUserData()
                 }
             }
         }

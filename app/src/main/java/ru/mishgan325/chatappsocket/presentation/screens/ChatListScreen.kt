@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ru.mishgan325.chatappsocket.R
 import ru.mishgan325.chatappsocket.domain.models.Chat
@@ -66,11 +67,11 @@ fun ChatListScreen(
 
 
     // Используем collectAsState для получения состояния
-    val state = chatListViewModel.chatListResponse.collectAsState().value
+    val state = chatListViewModel.chatListResponse.collectAsStateWithLifecycle()
 
     // Список чатов, отображаем его в зависимости от состояния
-    val chats: List<Chat> = when (state) {
-        is NetworkResult.Success -> state.data?.map { it.toChat() } ?: emptyList()
+    val chats: List<Chat> = when (state.value) {
+        is NetworkResult.Success -> state.value.data?.map { it.toChat() } ?: emptyList()
         is NetworkResult.Error -> {
             navHostController.navigate(Screen.Login.route)
             emptyList()
@@ -104,7 +105,7 @@ fun ChatListScreen(
                 .padding(innerPadding),
             color = MaterialTheme.colorScheme.background
         ) {
-            when (state) {
+            when (state.value) {
                 is NetworkResult.Error -> {
                     Text(
                         text = stringResource(R.string.error_loading_chats),
