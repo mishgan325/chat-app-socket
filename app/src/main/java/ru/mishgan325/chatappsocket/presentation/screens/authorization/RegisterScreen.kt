@@ -12,13 +12,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Login
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -76,7 +78,7 @@ fun RegisterScreen(
             value = email,
             onValueChange = { email = it },
             label = { Text(stringResource(R.string.email)) },
-            leadingIcon = { Icon(painterResource(R.drawable.ic_email), null) },
+            leadingIcon = { Icon(Icons.Outlined.Email, "Почта") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
@@ -91,7 +93,7 @@ fun RegisterScreen(
             value = username,
             onValueChange = { username = it },
             label = { Text(stringResource(R.string.username)) },
-            leadingIcon = { Icon(painterResource(R.drawable.ic_person), null) },
+            leadingIcon = { Icon(Icons.Outlined.Person, "Никнейм") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
         )
@@ -102,7 +104,7 @@ fun RegisterScreen(
             value = password,
             onValueChange = { password = it },
             label = { Text(stringResource(R.string.password)) },
-            leadingIcon = { Icon(painterResource(R.drawable.ic_login), null) },
+            leadingIcon = { Icon(Icons.AutoMirrored.Filled.Login, "Пароль") },
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
