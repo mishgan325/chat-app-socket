@@ -32,6 +32,7 @@ import kotlinx.coroutines.withContext
 import java.io.OutputStream
 import java.net.URL
 import ru.mishgan325.chatappsocket.domain.models.Message
+import androidx.core.net.toUri
 
 @Composable
 fun ChatBubble(
@@ -144,10 +145,9 @@ fun ChatBubble(
 
                     // Кнопка "Скачать файл"
                     if (message.fileUrl.isNotBlank()) {
-                        val fileName = Uri.parse(message.fileUrl)
+                        val fileName = message.fileUrl.toUri()
                             .lastPathSegment
-                            ?.substringAfter("-")
-                            ?.substringBefore("?")
+                            ?.substringBefore("?")?.substring(37)
                             ?: "Файл"
 
                         Spacer(modifier = Modifier.height(8.dp))
