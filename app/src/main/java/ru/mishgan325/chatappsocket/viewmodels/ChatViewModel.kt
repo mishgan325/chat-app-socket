@@ -1,5 +1,7 @@
 package ru.mishgan325.chatappsocket.viewmodels
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,15 +28,18 @@ import ru.mishgan325.chatappsocket.domain.usecases.SearchUsersUseCase
 import ru.mishgan325.chatappsocket.domain.usecases.SendMessageUseCase
 import ru.mishgan325.chatappsocket.domain.usecases.SubscribeWebSocketUseCase
 import ru.mishgan325.chatappsocket.domain.usecases.UnsubscribeWebSocketUseCase
+import ru.mishgan325.chatappsocket.domain.usecases.UploadFileUseCase
 import ru.mishgan325.chatappsocket.utils.NetworkResult
+import ru.mishgan325.chatappsocket.utils.NetworkResult.Error
 import ru.mishgan325.chatappsocket.utils.SessionManager
+import ru.mishgan325.chatappsocket.utils.getFilePartFromUri
 import javax.inject.Inject
 
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val getChatMessagesUseCase: GetChatMessagesUseCase,
-    private val getFileLinkUseCase: GetFileLinkUseCase,
+    private val uploadFileUseCase: UploadFileUseCase,
     private val editMessageUseCase: EditMessageUseCase,
     private val deleteMessageUseCase: DeleteMessageUseCase,
     private val sendMessageUseCase: SendMessageUseCase,
@@ -54,6 +59,19 @@ class ChatViewModel @Inject constructor(
 
     private val _newMessages = MutableStateFlow<List<Message>>(emptyList())
     val newMessages: StateFlow<List<Message>> = _newMessages
+
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery
+
+    private val _searchResults = MutableStateFlow<List<User>>(emptyList())
+    val searchResults: StateFlow<List<User>> = _searchResults
+
+    private val _attachedFileName = MutableStateFlow("")
+    val attachedFileName: StateFlow<String> = _attachedFileName
+
+    private val _uploadingFileState = MutableStateFlow<NetworkResult<Unit>>(NetworkResult.Idle())
+    val uploadingFileState: StateFlow<NetworkResult<Unit>> = _uploadingFileState
+
 
     private var incomingMessagesJob: Job? = null  // Для отслеживания подписки
 
@@ -89,6 +107,7 @@ class ChatViewModel @Inject constructor(
     fun editMessage(chatMessageId: Long, newContent: String) {
         viewModelScope.launch {
             when (val result = editMessageUseCase.invoke(chatMessageId, newContent)) {
+                is NetworkResult.Idle -> Log.d(TAG, "Nothing happening")
                 is NetworkResult.Error -> Log.d(TAG, "Error: ${result.message}")
                 is NetworkResult.Loading -> Log.d(TAG, "Auth is loading")
                 is NetworkResult.Success -> {
@@ -120,6 +139,7 @@ class ChatViewModel @Inject constructor(
     fun deleteMessage(chatMessageId: Long) {
         viewModelScope.launch {
             when (val result = deleteMessageUseCase.invoke(chatMessageId)) {
+                is NetworkResult.Idle -> Log.d(TAG, "Idle")
                 is NetworkResult.Error -> Log.d(TAG, "Delete error: ${result.message}")
                 is NetworkResult.Loading -> Log.d(TAG, "Deleting...")
                 is NetworkResult.Success -> {
@@ -135,10 +155,11 @@ class ChatViewModel @Inject constructor(
         _newMessages.value = _newMessages.value.filter { it.id != chatMessageId }
     }
 
-    fun sendMessage(content: String, fileUrl: String = "", chatId: Long) {
+    fun sendMessage(content: String, chatId: Long) {
         Log.d(TAG, "Попытка отправить сообщение: $content")
         viewModelScope.launch {
-            sendMessageUseCase.invoke(content, fileUrl, chatId)
+            sendMessageUseCase.invoke(content, _attachedFileName.value, chatId)
+            clearAttachedFile()
         }
     }
 
@@ -157,12 +178,6 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    private val _searchQuery = MutableStateFlow("")
-    val searchQuery: StateFlow<String> = _searchQuery
-
-    private val _searchResults = MutableStateFlow<List<User>>(emptyList())
-    val searchResults: StateFlow<List<User>> = _searchResults
-
     fun onSearchQueryChanged(query: String) {
         _searchQuery.value = query
         searchUsers(query)
@@ -177,12 +192,7 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             val result = searchUsersUseCase.invoke(query)
             when (result) {
-                is NetworkResult.Success -> {
-                    _searchResults.value = result.data?.map { dto ->
-                        User(dto.id, dto.username)
-                    } ?: emptyList()
-                }
-
+                is NetworkResult.Idle -> Log.d(TAG, "Idle")
                 is NetworkResult.Error -> {
                     Log.d(TAG, "Search error: ${result.message}")
                     _searchResults.value = emptyList()
@@ -191,9 +201,49 @@ class ChatViewModel @Inject constructor(
                 is NetworkResult.Loading -> {
                     // optionally show loading
                 }
+
+                is NetworkResult.Success -> {
+                    _searchResults.value = result.data?.map { dto ->
+                        User(dto.id, dto.username)
+                    } ?: emptyList()
+                }
             }
         }
     }
 
+    fun uploadFile(uri: Uri, context: Context) {
+        viewModelScope.launch {
+            _uploadingFileState.value = NetworkResult.Loading()
+
+            val filePart = getFilePartFromUri(uri, context)
+            if (filePart != null) {
+                when (val result = uploadFileUseCase(filePart)) {
+                    is NetworkResult.Idle -> Log.d(TAG, "Idle")
+                    is NetworkResult.Error -> {
+                        Log.e(TAG, "Ошибка загрузки файла: ${result.message}")
+                        _uploadingFileState.value = NetworkResult.Error(Unit, "Can't upload file")
+                    }
+                    is NetworkResult.Loading -> {
+                        Log.d(TAG, "Loading")
+                        _uploadingFileState.value = NetworkResult.Loading()
+                    }
+                    is NetworkResult.Success -> {
+                        val fileName = result.data?.filePath ?: ""
+                        _attachedFileName.value = fileName
+                        Log.d(TAG, "Файл загружен: $fileName")
+                        _uploadingFileState.value = NetworkResult.Success(Unit)
+                    }
+                }
+            } else {
+                Log.e(TAG, "Не удалось получить файл из Uri")
+            }
+        }
+    }
+
+
+
+    fun clearAttachedFile() {
+        _attachedFileName.value = ""
+    }
 
 }

@@ -1,5 +1,6 @@
 package ru.mishgan325.chatappsocket.data
 
+import okhttp3.MultipartBody
 import ru.mishgan325.chatappsocket.data.api.RemoteDataSource
 import ru.mishgan325.chatappsocket.data.api.model.AuthRequest
 import ru.mishgan325.chatappsocket.data.api.model.AuthResponse
@@ -10,6 +11,7 @@ import ru.mishgan325.chatappsocket.data.api.model.EditMessageRequest
 import ru.mishgan325.chatappsocket.data.api.model.GetFileLinkResponse
 import ru.mishgan325.chatappsocket.data.api.model.RegisterRequest
 import ru.mishgan325.chatappsocket.data.api.model.RegisterResponse
+import ru.mishgan325.chatappsocket.data.api.model.UploadFileResponse
 import ru.mishgan325.chatappsocket.data.api.model.WhoamiResponse
 import ru.mishgan325.chatappsocket.dto.ChatRoomDto
 import ru.mishgan325.chatappsocket.dto.UserDto
@@ -94,5 +96,9 @@ class ApiRepository @Inject constructor(
         return safeApiCall {
             remoteDataSource.addUserToChat(chatRoomId, userId)
         }
+    }
+
+    suspend fun uploadFile(file: MultipartBody.Part): NetworkResult<UploadFileResponse> {
+        return safeApiCall { remoteDataSource.uploadFile(file) }
     }
 }

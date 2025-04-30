@@ -1,11 +1,14 @@
 package ru.mishgan325.chatappsocket.data.api
 
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.mishgan325.chatappsocket.data.api.model.AuthRequest
@@ -17,6 +20,7 @@ import ru.mishgan325.chatappsocket.data.api.model.EditMessageRequest
 import ru.mishgan325.chatappsocket.data.api.model.GetFileLinkResponse
 import ru.mishgan325.chatappsocket.data.api.model.RegisterRequest
 import ru.mishgan325.chatappsocket.data.api.model.RegisterResponse
+import ru.mishgan325.chatappsocket.data.api.model.UploadFileResponse
 import ru.mishgan325.chatappsocket.data.api.model.WhoamiResponse
 import ru.mishgan325.chatappsocket.dto.ChatRoomDto
 import ru.mishgan325.chatappsocket.dto.UserDto
@@ -70,4 +74,10 @@ interface ApiService {
         @Path("chatId") chatId: Long,
         @Query("userId") userId: Long
     ): Response<Unit>
+
+    @Multipart
+    @POST("api/files/upload")
+    suspend fun uploadFile(
+        @Part file: MultipartBody.Part
+    ): Response<UploadFileResponse>
 }

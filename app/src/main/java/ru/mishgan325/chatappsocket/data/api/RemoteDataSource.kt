@@ -1,5 +1,6 @@
 package ru.mishgan325.chatappsocket.data.api
 
+import okhttp3.MultipartBody
 import ru.mishgan325.chatappsocket.data.api.model.AuthRequest
 import ru.mishgan325.chatappsocket.data.api.model.CreateGroupChatRequest
 import ru.mishgan325.chatappsocket.data.api.model.CreatePrivateChatRequest
@@ -38,4 +39,6 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
     suspend fun editMessage(chatMessageId: Long, editMessageRequest: EditMessageRequest) = apiService.editMessage(chatMessageId, editMessageRequest)
 
     suspend fun addUserToChat(chatRoomId: Long, userId: Long) = apiService.addUserToChat(chatRoomId, userId)
+
+    suspend fun uploadFile(file: MultipartBody.Part) = apiService.uploadFile(file)
 }

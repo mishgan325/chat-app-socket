@@ -36,7 +36,7 @@ class WebSocketService @Inject constructor(
 
         webSocketClient = webSocketClientFactory.create(sessionManager.getAuthToken().toString()).apply {
             setOnMessageReceivedListener { message ->
-                Log.d(TAG, "💥 WebSocketClient получил сообщение: $message")
+                Log.d(TAG, "💥 WebSocketService получил сообщение: $message")
                 val emitted = _incomingMessages.tryEmit(message)
                 Log.d(TAG, "🔥 Эмит в поток: $emitted")
             }
@@ -73,7 +73,7 @@ class WebSocketService @Inject constructor(
     // Отключение
     fun disconnect() {
         webSocketClient?.disconnect()
-        webSocketClient = null
+//        webSocketClient = null
         isConnected = false
         Log.d(TAG, "WebSocket отключён и обнулён")
     }

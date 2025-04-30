@@ -42,9 +42,26 @@ class WebSocketClient(
                 Log.d(TAG, "📦 Raw STOMP message: $text")
                 try {
                     val stompFrame = parseStompFrame(text)
-                    val message = gson.fromJson(stompFrame.body, ChatMessageWs::class.java)
-                    Log.d(TAG, "💥 WebSocketClient получил сообщение: $message")
-                    onMessageReceived?.invoke(message)
+                    if (stompFrame.command == "MESSAGE") {
+                        val message = gson.fromJson(stompFrame.body, ChatMessageWs::class.java)
+                        Log.d(TAG, "💥 WebSocketClient получил сообщение: $message")
+                        onMessageReceived?.invoke(message)
+                    }
+                    else if (stompFrame.command == "CONNECTED") {
+                        Log.d(TAG, "💥 WebSocketClient успешно подключен")
+                    }
+                    else if (stompFrame.command == "SUBSCRIBED") {
+                        Log.d(TAG, "💥 WebSocketClient успешно подписался на топик")
+                    }
+                    else if (stompFrame.command == "UNSUBSCRIBED") {
+                        Log.d(TAG, "💥 WebSocketClient успешно отписался от топик")
+                    }
+                    else if (stompFrame.command == "DISCONNECTED") {
+                        Log.d(TAG, "💥 WebSocketClient успешно отсоединился")
+                    }
+                    else {
+                        Log.d(TAG, stompFrame.toString())
+                    }
                 } catch (e: Exception) {
                     Log.e(TAG, "❌ Ошибка парсинга STOMP-сообщения", e)
                 }
@@ -158,9 +175,15 @@ class WebSocketClient(
     }
 
     fun disconnect() {
-        webSocket?.let {
-            it.close(1000, "User initiated disconnect")
+        try {
+            val disconnectFrame = "DISCONNECT\n\n\u0000"
+            webSocket?.send(disconnectFrame)
+
+            webSocket?.close(1000, "Normal closure")
+        } finally {
+            client.dispatcher.executorService.shutdown()
+            webSocket = null
         }
-        client.dispatcher.executorService.shutdown()
     }
+
 }

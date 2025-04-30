@@ -1,6 +1,9 @@
 package ru.mishgan325.chatappsocket.presentation.screens
 
 import ChatBubble
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -11,11 +14,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import ru.mishgan325.chatappsocket.presentation.components.AddUserToChatDialog
 import ru.mishgan325.chatappsocket.presentation.components.LoadingItem
+import ru.mishgan325.chatappsocket.utils.NetworkResult
 import ru.mishgan325.chatappsocket.viewmodels.ChatViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -26,7 +31,6 @@ fun ChatScreen(
     isPrivate: Boolean,
     viewModel: ChatViewModel,
 ) {
-    // загружаем сообщения один раз
     LaunchedEffect(chatRoomId) {
         viewModel.loadChatMessages(chatRoomId)
         viewModel.subscribeToWebSocket(chatRoomId)
@@ -54,6 +58,24 @@ fun ChatScreen(
             viewModel = viewModel
         )
     }
+
+    val context = LocalContext.current
+    val pickFileLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            viewModel.uploadFile(uri, context)
+        }
+    }
+
+    val uploadingState by viewModel.uploadingFileState.collectAsState()
+
+    val isUploading = uploadingState is NetworkResult.Loading
+
+    if (isUploading) {
+        CircularProgressIndicator(modifier = Modifier.size(24.dp))
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -65,7 +87,10 @@ fun ChatScreen(
                 actions = {
                     if (!isPrivate) {
                         IconButton(onClick = { showAddUserDialog = true }) {
-                            Icon(Icons.Default.PersonAdd, contentDescription = "Добавить пользователя")
+                            Icon(
+                                Icons.Default.PersonAdd,
+                                contentDescription = "Добавить пользователя"
+                            )
                         }
                     }
                 }
@@ -78,7 +103,9 @@ fun ChatScreen(
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
-                IconButton(onClick = { }) {
+                IconButton(onClick = {
+                    pickFileLauncher.launch("*/*")
+                }) {
                     Icon(Icons.Default.AttachFile, contentDescription = "Attach file")
                 }
                 TextField(
@@ -92,11 +119,11 @@ fun ChatScreen(
                 IconButton(
                     onClick = {
                         if (currentInput.isNotBlank()) {
-                            // TODO: отправка сообщения
-                            viewModel.sendMessage(currentInput, "", chatRoomId) //TODO: send files
+                            viewModel.sendMessage(currentInput, chatRoomId)
                             currentInput = ""
                         }
-                    }
+                    },
+                    enabled = !isUploading
                 ) {
                     Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send")
                 }
@@ -146,9 +173,11 @@ fun ChatScreen(
                 is LoadState.Loading -> {
                     item { LoadingItem() }
                 }
+
                 is LoadState.Error -> {
                     item { Text("Ошибка при подгрузке") }
                 }
+
                 else -> Unit
             }
 
@@ -156,9 +185,11 @@ fun ChatScreen(
                 is LoadState.Loading -> {
                     item { LoadingItem() }
                 }
+
                 is LoadState.Error -> {
                     item { Text("Ошибка загрузки") }
                 }
+
                 else -> Unit
             }
         }
